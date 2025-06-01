@@ -14,6 +14,7 @@ pub enum StateValue {
 
 impl StateManager {
     pub fn new(config_dir_path: PathBuf) -> Self {
+        std::fs::create_dir_all(&config_dir_path).unwrap();
         Self { config_dir_path }
     }
     fn get_state_file_path(&self, state: StateValue) -> PathBuf {
