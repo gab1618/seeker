@@ -11,6 +11,7 @@ pub enum SetupRepoErr {
     InitClone,
     WriteChanges,
     CommitChanges,
+    GetCurrBranch,
 }
 type SetupRepoResult<T> = Result<T, SetupRepoErr>;
 
@@ -18,18 +19,28 @@ pub fn setup_repo() -> SetupRepoResult<(TempDir, TempDir)> {
     let bare_repo_dir = tempdir().map_err(|_| SetupRepoErr::InitBare)?;
     let clone_repo_dir = tempdir().map_err(|_| SetupRepoErr::InitClone)?;
 
-    let _ = Command::new("git")
+    if !Command::new("git")
         .current_dir(bare_repo_dir.path())
         .args(["init", "--bare"])
         .output()
-        .map_err(|_| SetupRepoErr::InitBare)?;
+        .map_err(|_| SetupRepoErr::InitBare)?
+        .status
+        .success()
+    {
+        return Err(SetupRepoErr::InitBare);
+    }
 
-    let _ = Command::new("git")
+    if !Command::new("git")
         .current_dir(clone_repo_dir.path())
         .args(["init"])
         .output()
-        .map_err(|_| SetupRepoErr::InitClone)?;
-    let _ = Command::new("git")
+        .map_err(|_| SetupRepoErr::InitClone)?
+        .status
+        .success()
+    {
+        return Err(SetupRepoErr::InitClone);
+    }
+    if !Command::new("git")
         .current_dir(clone_repo_dir.path())
         .args([
             "remote",
@@ -38,42 +49,61 @@ pub fn setup_repo() -> SetupRepoResult<(TempDir, TempDir)> {
             bare_repo_dir.path().to_str().unwrap_or(""),
         ])
         .output()
-        .map_err(|_| SetupRepoErr::RemoteAdd)?;
+        .map_err(|_| SetupRepoErr::RemoteAdd)?
+        .status
+        .success()
+    {
+        return Err(SetupRepoErr::RemoteAdd);
+    }
 
     let mut sample_file = OpenOptions::new()
         .write(true)
         .create(true)
         .open(clone_repo_dir.path().to_path_buf().join("doc.md"))
         .unwrap();
-    let _ = write!(sample_file, "testing").map_err(|_| SetupRepoErr::WriteChanges)?;
+    write!(sample_file, "testing").map_err(|_| SetupRepoErr::WriteChanges)?;
     drop(sample_file);
 
-    let _ = Command::new("git")
+    if !Command::new("git")
         .current_dir(clone_repo_dir.path())
         .args(["add", "doc.md"])
         .output()
-        .map_err(|_| SetupRepoErr::Add)?;
+        .map_err(|_| SetupRepoErr::Add)?
+        .status
+        .success()
+    {
+        return Err(SetupRepoErr::Add);
+    }
 
-    let _ = Command::new("git")
+    if !Command::new("git")
         .current_dir(clone_repo_dir.path())
         .args(["commit", "-m", "testing"])
         .output()
-        .map_err(|_| SetupRepoErr::CommitChanges)?;
+        .map_err(|_| SetupRepoErr::CommitChanges)?
+        .status
+        .success()
+    {
+        return Err(SetupRepoErr::CommitChanges);
+    }
 
     let current_clone_branch_name = {
-        let clone_repo = Repository::open(clone_repo_dir.path()).unwrap();
-        let head = clone_repo.head().unwrap();
-        let branch_name = head.shorthand().unwrap();
+        let clone_repo =
+            Repository::open(clone_repo_dir.path()).map_err(|_| SetupRepoErr::GetCurrBranch)?;
+        let head = clone_repo.head().map_err(|_| SetupRepoErr::GetCurrBranch)?;
+        let branch_name = head.shorthand().ok_or(SetupRepoErr::GetCurrBranch)?;
         branch_name.to_owned()
     };
 
-    let _ = Command::new("git")
+    if !Command::new("git")
         .current_dir(clone_repo_dir.path())
         .args(["push", "-u", "origin", &current_clone_branch_name])
         .output()
-        .map_err(|_| SetupRepoErr::Push)?;
-
-    // TODO: add some proper error handling in case any of these commands fails
+        .map_err(|_| SetupRepoErr::Push)?
+        .status
+        .success()
+    {
+        return Err(SetupRepoErr::Push);
+    }
 
     Ok((clone_repo_dir, bare_repo_dir))
 }
