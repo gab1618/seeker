@@ -16,7 +16,7 @@ impl<'a> ChangesTracker<'a> {
         }
     }
 
-    pub fn get_changed_files(&self) -> Vec<PathBuf> {
+    pub fn get_changed_files(&self) -> Vec<(PathBuf, Vec<u8>)> {
         let last_indexed_commit = self
             .state_manager
             .get_state_file_value(crate::state_manager::StateValue::LastIndexedCommit);
@@ -55,20 +55,17 @@ impl<'a> ChangesTracker<'a> {
             )
             .unwrap();
 
-        let mut changed_files = Vec::new();
-
-        diff.foreach(
-            &mut |delta, _| {
-                if let Some(path) = delta.new_file().path() {
-                    changed_files.push(path.to_owned());
-                }
-                true
-            },
-            None,
-            None,
-            None,
-        )
-        .unwrap();
+        let changed_files = diff
+            .deltas()
+            .map(|delta| {
+                let path = delta.new_file().path().unwrap();
+                let diff_commit = repo.find_commit(start_commit.id()).unwrap();
+                let commit_tree = diff_commit.tree().unwrap();
+                let entry = commit_tree.get_path(path).unwrap();
+                let blob = repo.find_blob(entry.id()).unwrap();
+                (path.to_owned(), blob.content().to_vec())
+            })
+            .collect();
 
         changed_files
     }
