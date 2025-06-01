@@ -33,14 +33,15 @@ impl StateManager {
 
         Some(last_indexed_commit)
     }
-    pub fn save_state_value(&self, state: StateValue, commit: &str) {
+    pub fn save_state_value(&self, state: StateValue, commit: &str) -> std::io::Result<()> {
         let mut f = OpenOptions::new()
             .create(true)
             .write(true)
-            .open(self.get_state_file_path(state))
-            .unwrap();
+            .open(self.get_state_file_path(state))?;
 
         write!(f, "{commit}").unwrap();
+
+        Ok(())
     }
 }
 
@@ -60,7 +61,9 @@ mod tests {
             tracker.get_state_file_value(StateValue::LastIndexedCommit),
             None
         );
-        tracker.save_state_value(StateValue::LastIndexedCommit, &example_commit);
+        tracker
+            .save_state_value(StateValue::LastIndexedCommit, &example_commit)
+            .unwrap();
         assert_eq!(
             tracker.get_state_file_value(StateValue::LastIndexedCommit),
             Some(example_commit)
