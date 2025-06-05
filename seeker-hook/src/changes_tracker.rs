@@ -87,5 +87,14 @@ mod tests {
 
         let changed_files = tracker.get_changed_files();
         assert!(changed_files.len() > 0);
+
+        let expected_file_content = "testing";
+
+        let (_, first_change) = &changed_files[0];
+
+        assert_eq!(
+            first_change.clone(),
+            expected_file_content.bytes().collect::<Vec<u8>>()
+        );
     }
 }
