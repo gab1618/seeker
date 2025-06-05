@@ -9,6 +9,8 @@ pub struct GitArgs {
 #[derive(Debug)]
 pub enum ParseGitArgsErr {
     InvalidFormat,
+    NullInput,
+    InputErr,
 }
 
 pub fn parse_git_args(stdin: &std::io::Stdin) -> Result<GitArgs, ParseGitArgsErr> {
@@ -16,8 +18,8 @@ pub fn parse_git_args(stdin: &std::io::Stdin) -> Result<GitArgs, ParseGitArgsErr
         .lock()
         .lines()
         .next()
-        .expect("Could not get hook args")
-        .expect("Could not get hook args");
+        .ok_or(ParseGitArgsErr::NullInput)?
+        .map_err(|_| ParseGitArgsErr::InputErr)?;
 
     let hook_args: Vec<&str> = hook_args_line.split_whitespace().collect();
     if hook_args.len() != 3 {
