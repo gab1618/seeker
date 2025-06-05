@@ -1,15 +1,15 @@
 use git2::{self, DiffOptions, Repository};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use crate::state_manager::StateManager;
 
-pub struct ChangesTracker<'a> {
-    mount_path: PathBuf,
+pub struct ChangesTracker<'a, P: AsRef<Path>> {
+    mount_path: P,
     state_manager: &'a StateManager,
 }
 
-impl<'a> ChangesTracker<'a> {
-    pub fn new(mount_path: PathBuf, state_manager: &'a StateManager) -> Self {
+impl<'a, P: AsRef<Path>> ChangesTracker<'a, P> {
+    pub fn new(mount_path: P, state_manager: &'a StateManager) -> Self {
         Self {
             mount_path,
             state_manager,
