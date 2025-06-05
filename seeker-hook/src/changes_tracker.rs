@@ -21,6 +21,7 @@ impl<'a, P: AsRef<Path>> ChangesTracker<'a, P> {
             .state_manager
             .get_state_file_value(crate::state_manager::StateValue::LastIndexedCommit);
         let repo = Repository::open_bare(&self.mount_path).unwrap();
+
         let last_commit_oid = repo.head().unwrap().peel_to_commit().unwrap().id();
 
         let last_indexed_commit_oid = match last_indexed_commit {
