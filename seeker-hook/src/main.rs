@@ -28,11 +28,12 @@ fn main() {
     Logger::setup_logging(repo_path.join("info").join("log")).unwrap();
 
     let manager = StateManager::new(repo_path.clone());
-    let tracker = ChangesTracker::new(repo_path, &manager);
+    let tracker = ChangesTracker::new(repo_path, &manager).expect("Could not get file changes");
 
     log::info!("Setup done. Starting the index routine");
 
-    for (filepath, _) in tracker.get_changed_files() {
+    for entry in tracker.get_changed_files().unwrap() {
+        let (filepath, _) = entry.unwrap();
         log::info!("Indexing file {}", filepath.to_str().unwrap());
     }
 }
