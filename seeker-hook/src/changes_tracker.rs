@@ -111,7 +111,7 @@ impl<'a> ChangesTracker<'a> {
 mod tests {
     use tempfile::tempdir;
 
-    use crate::test::utils::setup_repo::TestRepo;
+    use crate::test::utils::test_repo::TestRepo;
 
     use super::*;
     #[test]

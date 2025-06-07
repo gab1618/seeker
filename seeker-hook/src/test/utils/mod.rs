@@ -1,1 +1,1 @@
-pub mod setup_repo;
+pub mod test_repo;
