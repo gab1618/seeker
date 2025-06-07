@@ -18,7 +18,7 @@ pub fn setup_repo<P: AsRef<Path>>(mount_path: P, args: GitArgs) -> Result<(), Se
         return Ok(());
     }
 
-    repo.set_head(&args.refName)
+    repo.set_head(&args.ref_name)
         .map_err(|_| SetupRepoErr::UpdateHead)?;
 
     Ok(())

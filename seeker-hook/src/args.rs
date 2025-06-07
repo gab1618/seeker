@@ -1,9 +1,9 @@
 use std::io::BufRead;
 
 pub struct GitArgs {
-    pub oldRev: String,
-    pub newRev: String,
-    pub refName: String,
+    pub old_rev: String,
+    pub new_rev: String,
+    pub ref_name: String,
 }
 
 #[derive(Debug)]
@@ -27,9 +27,9 @@ pub fn parse_git_args(stdin: &std::io::Stdin) -> Result<GitArgs, ParseGitArgsErr
     }
 
     let parsed_args = GitArgs {
-        oldRev: hook_args[0].to_owned(),
-        newRev: hook_args[1].to_owned(),
-        refName: hook_args[2].to_owned(),
+        old_rev: hook_args[0].to_owned(),
+        new_rev: hook_args[1].to_owned(),
+        ref_name: hook_args[2].to_owned(),
     };
 
     Ok(parsed_args)
