@@ -44,7 +44,7 @@ impl TestRepo {
         filename: &str,
         content: &str,
         msg: &str,
-    ) -> TestRepoResult<()> {
+    ) -> TestRepoResult<String> {
         let clone_repo =
             Repository::open(self.clone_dir.path()).map_err(|_| TestRepoErr::OpenRepo)?;
 
@@ -78,7 +78,7 @@ impl TestRepo {
             commit_parents.push(prev)
         }
 
-        clone_repo
+        let new_commit = clone_repo
             .commit(
                 Some("HEAD"),
                 &signature,
@@ -109,7 +109,7 @@ impl TestRepo {
             .push(&[&refspec], Some(&mut push_options))
             .map_err(|_| TestRepoErr::Push)?;
 
-        Ok(())
+        Ok(new_commit.to_string())
     }
     pub fn bare_dir(&self) -> &TempDir {
         &self.bare_dir
