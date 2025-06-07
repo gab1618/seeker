@@ -11,7 +11,7 @@ pub enum TestRepoErr {
     InitClone,
     WriteChanges,
     CommitChanges,
-    GetCurrBranch,
+    OpenRepo,
 }
 type TestRepoResult<T> = Result<T, TestRepoErr>;
 
@@ -24,12 +24,15 @@ impl TestRepo {
         let clone_dir = tempdir().map_err(|_| TestRepoErr::InitClone)?;
         let bare_dir = tempdir().map_err(|_| TestRepoErr::InitBare)?;
 
-        let clone_repo = Repository::init(clone_dir.path()).unwrap();
-        Repository::init_bare(bare_dir.path()).unwrap();
+        let clone_repo = Repository::init(clone_dir.path()).map_err(|_| TestRepoErr::InitClone)?;
+        Repository::init_bare(bare_dir.path()).map_err(|_| TestRepoErr::InitBare)?;
 
         clone_repo
-            .remote("origin", bare_dir.path().to_str().unwrap())
-            .unwrap();
+            .remote(
+                "origin",
+                bare_dir.path().to_str().ok_or(TestRepoErr::RemoteAdd)?,
+            )
+            .map_err(|_| TestRepoErr::RemoteAdd)?;
 
         Ok(Self {
             clone_dir,
@@ -42,25 +45,31 @@ impl TestRepo {
         content: &str,
         msg: &str,
     ) -> TestRepoResult<()> {
-        let clone_repo = Repository::open(self.clone_dir.path()).unwrap();
+        let clone_repo =
+            Repository::open(self.clone_dir.path()).map_err(|_| TestRepoErr::OpenRepo)?;
 
         let filepath = self.clone_dir().path().to_path_buf().join(filename);
         let mut sample_file = OpenOptions::new()
             .write(true)
             .create(true)
             .open(&filepath)
-            .unwrap();
+            .map_err(|_| TestRepoErr::WriteChanges)?;
         write!(sample_file, "{content}").map_err(|_| TestRepoErr::WriteChanges)?;
         drop(sample_file);
 
-        let mut index = clone_repo.index().unwrap();
-        index.add_path(Path::new(filename)).unwrap();
-        index.write().unwrap();
+        let mut index = clone_repo.index().map_err(|_| TestRepoErr::Add)?;
+        index
+            .add_path(Path::new(filename))
+            .map_err(|_| TestRepoErr::Add)?;
+        index.write().map_err(|_| TestRepoErr::Add)?;
 
-        let signature = Signature::now("seeker-test", "test.seeker@seeker.com").unwrap();
+        let signature = Signature::now("seeker-test", "test.seeker@seeker.com")
+            .map_err(|_| TestRepoErr::CommitChanges)?;
 
-        let tree_oid = index.write_tree().unwrap();
-        let tree = clone_repo.find_tree(tree_oid).unwrap();
+        let tree_oid = index.write_tree().map_err(|_| TestRepoErr::CommitChanges)?;
+        let tree = clone_repo
+            .find_tree(tree_oid)
+            .map_err(|_| TestRepoErr::CommitChanges)?;
 
         let previous_commit = clone_repo.head().and_then(|r| r.peel_to_commit()).ok();
 
@@ -78,12 +87,14 @@ impl TestRepo {
                 &tree,
                 &commit_parents.iter().collect::<Vec<_>>()[..],
             )
-            .unwrap();
+            .map_err(|_| TestRepoErr::CommitChanges)?;
 
-        let clone_head = clone_repo.head().unwrap();
-        let current_branch_name = clone_head.shorthand().unwrap();
+        let clone_head = clone_repo.head().map_err(|_| TestRepoErr::Push)?;
+        let current_branch_name = clone_head.shorthand().ok_or(TestRepoErr::Push)?;
 
-        let mut remote = clone_repo.find_remote("origin").unwrap();
+        let mut remote = clone_repo
+            .find_remote("origin")
+            .map_err(|_| TestRepoErr::Push)?;
         let remote_callbacks = RemoteCallbacks::new();
         let mut push_options = PushOptions::new();
 
@@ -94,7 +105,9 @@ impl TestRepo {
             branch = current_branch_name
         );
 
-        remote.push(&[&refspec], Some(&mut push_options)).unwrap();
+        remote
+            .push(&[&refspec], Some(&mut push_options))
+            .map_err(|_| TestRepoErr::Push)?;
 
         Ok(())
     }
