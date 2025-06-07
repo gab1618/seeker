@@ -111,13 +111,17 @@ impl<'a> ChangesTracker<'a> {
 mod tests {
     use tempfile::tempdir;
 
-    use crate::test::utils::setup_repo::setup_repo;
+    use crate::test::utils::setup_repo::TestRepo;
 
     use super::*;
     #[test]
     fn test_get_changed_files() {
         let state_dir = tempdir().unwrap();
-        let (_, bare_repo_dir) = setup_repo().unwrap();
+        let test_repo = TestRepo::new().unwrap();
+        test_repo
+            .commit_and_push_change("doc.md", "testing", "first commit")
+            .unwrap();
+        let bare_repo_dir = test_repo.bare_dir();
         let state_manager = StateManager::new(state_dir.path().to_owned());
         let tracker = ChangesTracker::new(bare_repo_dir.path().to_owned(), &state_manager).unwrap();
 
