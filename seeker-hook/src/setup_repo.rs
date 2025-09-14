@@ -14,7 +14,7 @@ pub enum SetupRepoErr {
 pub fn setup_repo<P: AsRef<Path>>(mount_path: P, args: GitArgs) -> Result<(), SetupRepoErr> {
     let repo = Repository::open_bare(mount_path).map_err(|_| SetupRepoErr::OpenRepo)?;
 
-    if let Ok(_) = repo.head() {
+    if repo.head().is_ok() {
         return Ok(());
     }
 
