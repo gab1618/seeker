@@ -1,1 +1,6 @@
 authorized_keys
+.env
+
+# Added by cargo
+
+/target
