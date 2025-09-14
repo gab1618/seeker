@@ -1,0 +1,26 @@
+use std::{
+    io::{self, BufWriter, Write},
+    net::TcpStream,
+    path::PathBuf,
+};
+
+use daemon_command::SeekerDaemonCommand;
+
+pub struct SeekerDaemonClient {
+    conn: TcpStream,
+}
+
+impl SeekerDaemonClient {
+    pub fn new(conn_url: &str) -> io::Result<Self> {
+        let connection = TcpStream::connect(conn_url)?;
+
+        Ok(Self { conn: connection })
+    }
+    pub fn index_file(&self, file_path: PathBuf) -> io::Result<()> {
+        let mut w = BufWriter::new(&self.conn);
+        let cmd = SeekerDaemonCommand::new(daemon_command::SeekerDaemonAction::Index, file_path);
+        let str_cmd: String = cmd.into();
+        writeln!(w, "{str_cmd}")?;
+        Ok(())
+    }
+}

@@ -1,7 +1,11 @@
 [workspace]
 members = [
   "daemon-client",
+  "daemon-command",
   "daemon-server",
   "seeker-hook"
 ]
 resolver = "3"
+
+[workspace.dependencies]
+daemon-command = {path = "daemon-command"}
