@@ -378,6 +378,10 @@ name = "seeker-daemon"
 version = "0.1.0"
 
 [[package]]
+name = "seeker-daemon-client"
+version = "0.1.0"
+
+[[package]]
 name = "seeker-hook"
 version = "0.1.0"
 dependencies = [

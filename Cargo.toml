@@ -1,6 +1,7 @@
 [workspace]
 members = [
-  "seeker-daemon-server",
+  "daemon-client",
+  "daemon-server",
   "seeker-hook"
 ]
 resolver = "3"
