@@ -1,4 +1,4 @@
-use std::{io::BufRead, path::PathBuf};
+use std::path::PathBuf;
 
 use args::parse_git_args;
 use changes_tracker::ChangesTracker;
@@ -18,7 +18,6 @@ mod state_manager;
 fn main() {
     let stdin = std::io::stdin();
     let git_args = parse_git_args(&stdin).expect("Could not parse args");
-    drop(stdin);
 
     log::info!("Starting setup");
     let repo_path: PathBuf = std::env::args().nth(1).unwrap_or(".".to_string()).into();

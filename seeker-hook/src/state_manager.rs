@@ -24,10 +24,11 @@ impl StateManager {
     }
     pub fn get_state_file_value(&self, state: StateValue) -> Option<String> {
         let mut last_indexed_commit = String::new();
-        if let Err(_) = OpenOptions::new()
+        if OpenOptions::new()
             .read(true)
             .open(self.get_state_file_path(state))
             .map(|mut f| f.read_to_string(&mut last_indexed_commit))
+            .is_err()
         {
             return None;
         }
@@ -37,6 +38,7 @@ impl StateManager {
     pub fn save_state_value(&self, state: StateValue, commit: &str) -> std::io::Result<()> {
         let mut f = OpenOptions::new()
             .create(true)
+            .truncate(true)
             .write(true)
             .open(self.get_state_file_path(state))?;
 
