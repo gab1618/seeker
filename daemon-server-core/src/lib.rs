@@ -14,6 +14,7 @@ use crate::{
 pub mod command;
 pub mod error;
 pub mod indexer;
+pub mod response;
 
 pub struct SeekerDaemonServer<T: Indexer + Send + Sync + 'static> {
     listener: TcpListener,

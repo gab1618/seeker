@@ -5,6 +5,7 @@ pub enum DaemonServerError {
     ReadRequest,
     SendResponse,
     StartServer,
+    ParseResponse,
 }
 
 pub type DaemonServerResult<T> = Result<T, DaemonServerError>;
