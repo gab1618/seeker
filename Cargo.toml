@@ -2,7 +2,7 @@
 members = [
   "daemon-client",
   "daemon-command",
-  "daemon-server",
+  "daemon-server-core",
   "seeker-hook"
 ]
 resolver = "3"
