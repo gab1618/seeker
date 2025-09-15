@@ -4,6 +4,8 @@ use std::{
     thread::{self, JoinHandle},
 };
 
+pub mod command;
+
 pub struct SeekerDaemonServer {
     listener: TcpListener,
 }

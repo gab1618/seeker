@@ -62,7 +62,7 @@ impl Into<String> for SeekerDaemonCommand {
 mod tests {
     use std::path::PathBuf;
 
-    use crate::{SeekerDaemonAction, SeekerDaemonCommand};
+    use super::{SeekerDaemonAction, SeekerDaemonCommand};
 
     #[test]
     fn test_parse_command() {
