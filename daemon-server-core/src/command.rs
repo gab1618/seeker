@@ -1,17 +1,19 @@
 use std::path::PathBuf;
 
+use crate::error::DaemonServerError;
+
 #[cfg_attr(test, derive(Debug, PartialEq))]
 pub enum SeekerDaemonAction {
     Index,
 }
 
 impl TryFrom<&str> for SeekerDaemonAction {
-    type Error = ();
+    type Error = DaemonServerError;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         match value {
             "index" => Ok(Self::Index),
-            _ => Err(()),
+            _ => Err(DaemonServerError::ParseCommand),
         }
     }
 }
@@ -34,14 +36,14 @@ impl SeekerDaemonCommand {
 }
 
 impl TryFrom<&str> for SeekerDaemonCommand {
-    type Error = ();
+    type Error = DaemonServerError;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let mut args = value.split(" ");
-        let action_arg = args.next().ok_or(())?;
+        let action_arg = args.next().ok_or(DaemonServerError::ParseCommand)?;
         let parsed_action: SeekerDaemonAction = action_arg.try_into()?;
 
-        let file_path_arg = args.next().ok_or(())?;
+        let file_path_arg = args.next().ok_or(DaemonServerError::ParseCommand)?;
         let parsed_file_path: PathBuf = file_path_arg.into();
 
         Ok(Self {
