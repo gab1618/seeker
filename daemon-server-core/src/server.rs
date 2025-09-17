@@ -16,9 +16,7 @@ pub struct SeekerDaemonServer<T: Indexer + Send + Sync + 'static> {
 }
 
 impl<T: Indexer + Send + Sync + 'static> SeekerDaemonServer<T> {
-    pub fn bind(url: &str, indexer: Arc<T>) -> DaemonServerResult<Self> {
-        let listener = TcpListener::bind(url).map_err(|_| DaemonServerError::StartServer)?;
-
+    pub fn new(listener: TcpListener, indexer: Arc<T>) -> DaemonServerResult<Self> {
         Ok(Self { listener, indexer })
     }
     pub fn start(self) -> JoinHandle<DaemonServerResult<Self>> {
