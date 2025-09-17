@@ -11,10 +11,8 @@ pub struct SeekerDaemonClient {
 }
 
 impl SeekerDaemonClient {
-    pub fn new(conn_url: &str) -> io::Result<Self> {
-        let connection = TcpStream::connect(conn_url)?;
-
-        Ok(Self { conn: connection })
+    pub fn new(conn: TcpStream) -> io::Result<Self> {
+        Ok(Self { conn })
     }
     pub fn index_file(&self, file_path: PathBuf) -> io::Result<()> {
         let mut w = BufWriter::new(&self.conn);
