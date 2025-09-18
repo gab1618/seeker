@@ -26,11 +26,13 @@ impl<T: Indexer + Send + Sync + 'static> SeekerDaemonServer<T> {
             while let Ok((soc, _addr)) = self.listener.accept().await {
                 let clone_indexer = self.indexer.clone();
                 tokio::spawn(async move {
-                    let _ = Self::handle_connection(soc, clone_indexer);
+                    if let Err(err) = Self::handle_connection(soc, clone_indexer).await {
+                        println!("{:#?}", err);
+                    }
                 });
             }
 
-            rx.await.unwrap();
+            let _ = rx.await;
             self
         })
     }
@@ -55,7 +57,7 @@ impl<T: Indexer + Send + Sync + 'static> SeekerDaemonServer<T> {
 
         w.write_all(format!("Command received: {input}\n").as_bytes())
             .await
-            .unwrap();
+            .map_err(|_| DaemonServerError::SendResponse)?;
         Ok(())
     }
 }
