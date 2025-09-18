@@ -1,6 +1,7 @@
 [workspace]
 members = [
   "daemon-client",
+  "daemon-process",
   "daemon-server-core",
   "seeker-hook"
 ]

@@ -6,6 +6,6 @@ edition = "2024"
 [dependencies]
 
 [features]
-server = []
+server = ["indexer", "api"]
 indexer = []
 api = []
