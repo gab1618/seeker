@@ -53,7 +53,7 @@ impl<T: Indexer + Send + Sync + 'static> SeekerDaemonServer<T> {
             }
         }
 
-        w.write_all(format!("Command received: {input}").as_bytes())
+        w.write_all(format!("Command received: {input}\n").as_bytes())
             .await
             .unwrap();
         Ok(())
