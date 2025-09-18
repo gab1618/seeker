@@ -9,3 +9,4 @@ resolver = "3"
 
 [workspace.dependencies]
 daemon-server-core = {path = "daemon-server-core"}
+tokio = { version = "1.47.1", features = ["full"] }

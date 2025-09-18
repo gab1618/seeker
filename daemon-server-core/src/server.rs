@@ -1,8 +1,8 @@
-use std::{
-    io::{BufRead, BufReader, BufWriter, Write},
+use std::sync::Arc;
+use tokio::{
+    io::{AsyncBufReadExt, AsyncWriteExt, BufReader, BufWriter},
     net::{TcpListener, TcpStream},
-    sync::Arc,
-    thread::{self, JoinHandle},
+    task::{JoinHandle},
 };
 
 use crate::{
@@ -19,20 +19,30 @@ impl<T: Indexer + Send + Sync + 'static> SeekerDaemonServer<T> {
     pub fn new(listener: TcpListener, indexer: Arc<T>) -> DaemonServerResult<Self> {
         Ok(Self { listener, indexer })
     }
-    pub fn start(self) -> JoinHandle<DaemonServerResult<Self>> {
-        thread::spawn(move || {
-            while let Ok((soc, _addrs)) = self.listener.accept() {
-                let indexer = self.indexer.clone();
-                thread::spawn(move || Self::handle_connection(soc, indexer));
+    pub async fn start(self) -> JoinHandle<Self> {
+        let (tx, rx) = tokio::sync::oneshot::channel();
+        tokio::spawn(async move {
+            let _ = tx.send(());
+            while let Ok((soc, _addr)) = self.listener.accept().await {
+                let clone_indexer = self.indexer.clone();
+                tokio::spawn(async move {
+                    let _ = Self::handle_connection(soc, clone_indexer);
+                });
             }
-            Ok(self)
+
+            rx.await.unwrap();
+            self
         })
     }
-    fn handle_connection(soc: TcpStream, indexer: Arc<T>) -> DaemonServerResult<()> {
+    async fn handle_connection(mut soc: TcpStream, indexer: Arc<T>) -> DaemonServerResult<()> {
         let mut input = String::new();
-        let mut r = BufReader::new(&soc);
-        let mut w = BufWriter::new(&soc);
+
+        let (mut r, mut w) = soc.split();
+        let mut r = BufReader::new(&mut r);
+        let mut w = BufWriter::new(&mut w);
+
         r.read_line(&mut input)
+            .await
             .map_err(|_| DaemonServerError::ReadRequest)?;
 
         let parsed_command: SeekerDaemonCommand = input.as_str().try_into()?;
@@ -43,7 +53,9 @@ impl<T: Indexer + Send + Sync + 'static> SeekerDaemonServer<T> {
             }
         }
 
-        writeln!(w, "Command received: {input}").map_err(|_| DaemonServerError::SendResponse)?;
+        w.write_all(format!("Command received: {input}").as_bytes())
+            .await
+            .unwrap();
         Ok(())
     }
 }

@@ -1,4 +1,5 @@
-use std::{net::TcpListener, sync::Arc};
+use std::{sync::Arc};
+use tokio::net::TcpListener;
 
 use daemon_server_core::{indexer::Indexer, server::SeekerDaemonServer};
 
@@ -12,11 +13,14 @@ impl Indexer for MockIndexer {
     }
 }
 
+#[tokio::main]
 async fn main() {
     let shared_indexer = Arc::new(MockIndexer{});
-    let listener = TcpListener::bind("127.0.0.1:5151").unwrap();
+    let listener = TcpListener::bind("127.0.0.1:5151").await.unwrap();
     let server = SeekerDaemonServer::new(listener, shared_indexer.clone()).unwrap();
-    let server_handle = server.start();
     println!("Server started at port 5151");
-    server_handle.join().unwrap().unwrap();
+    let _ = server.start().await;
+
+    tokio::signal::ctrl_c().await.unwrap();
+    println!("Server stopped");
 }
