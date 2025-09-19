@@ -547,6 +547,7 @@ name = "seeker-daemon-client"
 version = "0.1.0"
 dependencies = [
  "daemon-server-core",
+ "tokio",
 ]
 
 [[package]]

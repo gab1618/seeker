@@ -5,3 +5,7 @@ edition = "2024"
 
 [dependencies]
 daemon-server-core = {workspace = true, features = ["api"]}
+tokio = {workspace = true}
+
+[dev-dependencies]
+daemon-server-core = {workspace = true, features = ["api", "server"]}

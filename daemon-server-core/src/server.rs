@@ -2,7 +2,6 @@ use std::sync::Arc;
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader, BufWriter},
     net::{TcpListener, TcpStream},
-    task::{JoinHandle},
 };
 
 use crate::{
@@ -19,22 +18,20 @@ impl<T: Indexer + Send + Sync + 'static> SeekerDaemonServer<T> {
     pub fn new(listener: TcpListener, indexer: Arc<T>) -> DaemonServerResult<Self> {
         Ok(Self { listener, indexer })
     }
-    pub async fn start(self) -> JoinHandle<Self> {
+    pub async fn start(self) {
         let (tx, rx) = tokio::sync::oneshot::channel();
         tokio::spawn(async move {
             let _ = tx.send(());
             while let Ok((soc, _addr)) = self.listener.accept().await {
-                let clone_indexer = self.indexer.clone();
-                tokio::spawn(async move {
-                    if let Err(err) = Self::handle_connection(soc, clone_indexer).await {
-                        println!("{:#?}", err);
-                    }
-                });
+                let indexer = self.indexer.clone();
+                if let Err(err) = Self::handle_connection(soc, indexer).await {
+                    eprintln!("{:#?}", err);
+                }
             }
 
-            let _ = rx.await;
             self
-        })
+        });
+        let _ = rx.await;
     }
     async fn handle_connection(mut soc: TcpStream, indexer: Arc<T>) -> DaemonServerResult<()> {
         let mut input = String::new();
