@@ -1,7 +1,9 @@
 use std::io::BufRead;
 
 pub struct GitArgs {
+    #[allow(dead_code)]
     pub old_rev: String,
+    #[allow(dead_code)]
     pub new_rev: String,
     pub ref_name: String,
 }

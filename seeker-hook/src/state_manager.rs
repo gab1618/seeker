@@ -35,6 +35,7 @@ impl StateManager {
 
         Some(last_indexed_commit)
     }
+    #[allow(dead_code)]
     pub fn save_state_value(&self, state: StateValue, commit: &str) -> std::io::Result<()> {
         let mut f = OpenOptions::new()
             .create(true)
