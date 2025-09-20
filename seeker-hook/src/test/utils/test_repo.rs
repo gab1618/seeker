@@ -52,6 +52,7 @@ impl TestRepo {
         let mut sample_file = OpenOptions::new()
             .write(true)
             .create(true)
+            .truncate(true)
             .open(&filepath)
             .map_err(|_| TestRepoErr::WriteChanges)?;
         write!(sample_file, "{content}").map_err(|_| TestRepoErr::WriteChanges)?;

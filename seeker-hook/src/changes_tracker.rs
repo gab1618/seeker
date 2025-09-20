@@ -123,7 +123,7 @@ mod tests {
             .unwrap();
         let bare_repo_dir = test_repo.bare_dir();
         let state_manager = StateManager::new(state_dir.path().to_owned());
-        let tracker = ChangesTracker::new(bare_repo_dir.path().to_owned(), &state_manager).unwrap();
+        let tracker = ChangesTracker::new(bare_repo_dir.path(), &state_manager).unwrap();
 
         let mut changed_files = tracker.get_changed_files().unwrap();
         let first_entry = changed_files.next().unwrap().unwrap();
@@ -157,7 +157,7 @@ mod tests {
             .commit_and_push_change("doc-1.md", expected_file_content, "second commit")
             .unwrap();
         let bare_repo_dir = test_repo.bare_dir();
-        let tracker = ChangesTracker::new(bare_repo_dir.path().to_owned(), &state_manager).unwrap();
+        let tracker = ChangesTracker::new(bare_repo_dir.path(), &state_manager).unwrap();
 
         let mut changed_files = tracker.get_changed_files().unwrap();
         let first_entry = changed_files.next().unwrap().unwrap();
