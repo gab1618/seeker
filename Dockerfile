@@ -10,21 +10,23 @@ RUN mkdir -p /repo/seeker.git
 WORKDIR /repo/seeker.git
 RUN git init --bare
 
-# Build Rust hooks
-COPY seeker-hook/ /seeker-hook
-WORKDIR /seeker-hook
-RUN cargo build --release
+# Build Rust code
+WORKDIR /build
+COPY . .
+RUN cargo build --release --package seeker-hook && \
+  cargo build --release --package seeker-daemon-process
 
 FROM debian:bookworm-slim
 
-# Install minimal runtime dependencies
 RUN apt-get update && \
   apt-get install -y --no-install-recommends git openssh-server && \
   rm -rf /var/lib/apt/lists/*
 
-# Copy compiled binaries
+# Copy created repo
 COPY --from=builder /repo/seeker.git /repo/seeker.git
-COPY --from=builder /seeker-hook/target/release/seeker-hook /usr/bin/
+
+# Copy built binaries
+COPY --from=builder /build/target/release/seeker-hook /usr/bin/
 RUN ln -s /usr/bin/seeker-hook /repo/seeker.git/hooks/post-receive
 
 # Setup SSH
