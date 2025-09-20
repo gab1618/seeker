@@ -27,7 +27,7 @@ impl Indexer for MockIndexer {
     }
 }
 
-const TEST_URL: &'static str = "127.0.0.1:5151";
+const TEST_URL: &str = "127.0.0.1:5151";
 
 async fn setup_server() -> Arc<MockIndexer> {
     let shared_indexer = Arc::new(MockIndexer::default());
