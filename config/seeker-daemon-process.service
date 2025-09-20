@@ -4,7 +4,6 @@ After=network.target
 
 [Service]
 Type=simple
-# Update this path to where your binary is located
 ExecStart=/usr/bin/seeker-daemon-process
 Restart=always
 RestartSec=5
