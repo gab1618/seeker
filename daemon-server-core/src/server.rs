@@ -8,6 +8,7 @@ use crate::{
     command::{SeekerDaemonAction, SeekerDaemonCommand},
     error::{DaemonServerError, DaemonServerResult},
     indexer::Indexer,
+    response::SeekerDaemonResponse,
 };
 pub struct SeekerDaemonServer<T: Indexer + Send + Sync + 'static> {
     listener: TcpListener,
@@ -52,9 +53,19 @@ impl<T: Indexer + Send + Sync + 'static> SeekerDaemonServer<T> {
             }
         }
 
-        w.write_all(format!("Command received: {input}\n").as_bytes())
+        let resp = SeekerDaemonResponse {
+            message: "Command received".to_owned(),
+            status: crate::response::SeekerDaemonResponseStatus::Ok,
+        };
+
+        let str_response: String = (&resp).into();
+        w.write_all(str_response.as_bytes())
             .await
             .map_err(|_| DaemonServerError::SendResponse)?;
+        w.flush()
+            .await
+            .map_err(|_| DaemonServerError::SendResponse)?;
+
         Ok(())
     }
 }
