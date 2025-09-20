@@ -47,7 +47,7 @@ async fn setup_server() -> Arc<MockIndexer> {
 async fn test_index_req() {
     let shared_indexer = setup_server().await;
     let client_conn = TcpStream::connect(TEST_URL).await.unwrap();
-    let mut client = SeekerDaemonClient::new(client_conn).unwrap();
+    let mut client = SeekerDaemonClient::new(client_conn);
     assert_eq!(shared_indexer.get_curr_index_count(), 0);
 
     client.index_file("./text.txt".into()).await.unwrap();
