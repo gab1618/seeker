@@ -1,0 +1,8 @@
+[package]
+name = "seeker-daemon-process"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+seeker-daemon-server-core = {workspace = true, features = ["server"]}
+tokio = {workspace = true}

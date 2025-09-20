@@ -1,0 +1,11 @@
+[package]
+name = "seeker-daemon-client"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+seeker-daemon-server-core = {workspace = true, features = ["api"]}
+tokio = {workspace = true}
+
+[dev-dependencies]
+seeker-daemon-server-core = {workspace = true, features = ["api", "server"]}
