@@ -32,3 +32,9 @@ After that, you should be able to interact with this repository just like how yo
 ```sh
 git remote add origin ssh://git@localhost:2222/repo/seeker.git
 ```
+
+Inside the container, you can access the logs with:
+
+```bash
+tail -F /repo/seeker.git/info/log
+```
