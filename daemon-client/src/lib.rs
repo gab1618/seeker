@@ -1,11 +1,8 @@
-use std::{
-    io::{self},
-    path::PathBuf,
-};
+use std::path::PathBuf;
 
 use seeker_daemon_server_core::{
-    command::{SeekerDaemonAction, SeekerDaemonCommand},
-    response::SeekerDaemonResponse,
+    command::{DaemonAction, DaemonCommand},
+    response::DaemonResponse,
 };
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader, BufWriter},
@@ -18,19 +15,19 @@ pub mod error;
 #[cfg(test)]
 mod test;
 
-pub struct SeekerDaemonClient {
+pub struct DaemonClient {
     conn: TcpStream,
 }
 
-impl SeekerDaemonClient {
+impl DaemonClient {
     pub fn new(conn: TcpStream) -> Self {
         Self { conn }
     }
     pub async fn index_file(
         &mut self,
         file_path: PathBuf,
-    ) -> DaemonClientResult<SeekerDaemonResponse> {
-        let cmd = SeekerDaemonCommand::new(SeekerDaemonAction::Index, file_path);
+    ) -> DaemonClientResult<DaemonResponse> {
+        let cmd = DaemonCommand::new(DaemonAction::Index, file_path);
 
         let (r, w) = self.conn.split();
 
@@ -49,7 +46,7 @@ impl SeekerDaemonClient {
             .await
             .map_err(|_| DaemonClientErr::RecvServerResponse)?;
 
-        let parsed_response: SeekerDaemonResponse = response_input
+        let parsed_response: DaemonResponse = response_input
             .as_str()
             .try_into()
             .map_err(|_| DaemonClientErr::ParseServerResponse)?;

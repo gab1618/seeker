@@ -5,17 +5,17 @@ use tokio::{
 };
 
 use crate::{
-    command::{SeekerDaemonAction, SeekerDaemonCommand},
+    command::{DaemonAction, DaemonCommand},
     error::{DaemonServerError, DaemonServerResult},
     indexer::Indexer,
-    response::SeekerDaemonResponse,
+    response::DaemonResponse,
 };
-pub struct SeekerDaemonServer<T: Indexer + Send + Sync + 'static> {
+pub struct DaemonServer<T: Indexer + Send + Sync + 'static> {
     listener: TcpListener,
     indexer: Arc<T>,
 }
 
-impl<T: Indexer + Send + Sync + 'static> SeekerDaemonServer<T> {
+impl<T: Indexer + Send + Sync + 'static> DaemonServer<T> {
     pub fn new(listener: TcpListener, indexer: Arc<T>) -> DaemonServerResult<Self> {
         Ok(Self { listener, indexer })
     }
@@ -45,17 +45,17 @@ impl<T: Indexer + Send + Sync + 'static> SeekerDaemonServer<T> {
             .await
             .map_err(|_| DaemonServerError::ReadRequest)?;
 
-        let parsed_command: SeekerDaemonCommand = input.as_str().try_into()?;
+        let parsed_command: DaemonCommand = input.as_str().try_into()?;
 
         match parsed_command.action {
-            SeekerDaemonAction::Index => {
+            DaemonAction::Index => {
                 (*indexer).index_file(parsed_command.filepath)?;
             }
         }
 
-        let resp = SeekerDaemonResponse {
+        let resp = DaemonResponse {
             message: "Command received".to_owned(),
-            status: crate::response::SeekerDaemonResponseStatus::Ok,
+            status: crate::response::DaemonResponseStatus::Ok,
         };
 
         let str_response: String = (&resp).into();

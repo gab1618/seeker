@@ -1,5 +1,5 @@
 use seeker_daemon_server_core::{
-    error::DaemonServerResult, indexer::Indexer, server::SeekerDaemonServer,
+    error::DaemonServerResult, indexer::Indexer, server::DaemonServer,
 };
 use std::sync::{
     Arc,
@@ -7,7 +7,7 @@ use std::sync::{
 };
 use tokio::net::{TcpListener, TcpStream};
 
-use crate::SeekerDaemonClient;
+use crate::DaemonClient;
 
 #[derive(Default)]
 struct MockIndexer {
@@ -34,7 +34,7 @@ async fn setup_server() -> Arc<MockIndexer> {
     let server_listener = TcpListener::bind(TEST_URL)
         .await
         .expect("Could not start server listener");
-    let server = SeekerDaemonServer::new(server_listener, shared_indexer.clone())
+    let server = DaemonServer::new(server_listener, shared_indexer.clone())
         .expect("Could not create server");
 
     server.start().await;
@@ -46,7 +46,7 @@ async fn setup_server() -> Arc<MockIndexer> {
 async fn test_index_req() {
     let shared_indexer = setup_server().await;
     let client_conn = TcpStream::connect(TEST_URL).await.unwrap();
-    let mut client = SeekerDaemonClient::new(client_conn);
+    let mut client = DaemonClient::new(client_conn);
     assert_eq!(shared_indexer.get_curr_index_count(), 0);
 
     client.index_file("./text.txt".into()).await.unwrap();

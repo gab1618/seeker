@@ -3,11 +3,11 @@ use std::path::PathBuf;
 use crate::error::DaemonServerError;
 
 #[cfg_attr(test, derive(Debug, PartialEq))]
-pub enum SeekerDaemonAction {
+pub enum DaemonAction {
     Index,
 }
 
-impl TryFrom<&str> for SeekerDaemonAction {
+impl TryFrom<&str> for DaemonAction {
     type Error = DaemonServerError;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
@@ -17,31 +17,31 @@ impl TryFrom<&str> for SeekerDaemonAction {
         }
     }
 }
-impl Into<String> for SeekerDaemonAction {
+impl Into<String> for DaemonAction {
     fn into(self) -> String {
         match self {
-            SeekerDaemonAction::Index => String::from("index"),
+            DaemonAction::Index => String::from("index"),
         }
     }
 }
-pub struct SeekerDaemonCommand {
-    pub action: SeekerDaemonAction,
+pub struct DaemonCommand {
+    pub action: DaemonAction,
     pub filepath: PathBuf,
 }
 
-impl SeekerDaemonCommand {
-    pub fn new(action: SeekerDaemonAction, filepath: PathBuf) -> Self {
+impl DaemonCommand {
+    pub fn new(action: DaemonAction, filepath: PathBuf) -> Self {
         Self { action, filepath }
     }
 }
 
-impl TryFrom<&str> for SeekerDaemonCommand {
+impl TryFrom<&str> for DaemonCommand {
     type Error = DaemonServerError;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let mut args = value.split(" ");
         let action_arg = args.next().ok_or(DaemonServerError::ParseCommand)?;
-        let parsed_action: SeekerDaemonAction = action_arg.try_into()?;
+        let parsed_action: DaemonAction = action_arg.try_into()?;
 
         let file_path_arg = args.next().ok_or(DaemonServerError::ParseCommand)?;
         let parsed_file_path: PathBuf = file_path_arg.into();
@@ -53,7 +53,7 @@ impl TryFrom<&str> for SeekerDaemonCommand {
     }
 }
 
-impl Into<String> for SeekerDaemonCommand {
+impl Into<String> for DaemonCommand {
     fn into(self) -> String {
         let str_action: String = self.action.into();
         format!("{} {}", str_action, self.filepath.display())
@@ -64,19 +64,19 @@ impl Into<String> for SeekerDaemonCommand {
 mod tests {
     use std::path::PathBuf;
 
-    use super::{SeekerDaemonAction, SeekerDaemonCommand};
+    use super::{DaemonAction, DaemonCommand};
 
     #[test]
     fn test_parse_command() {
         let example_path = PathBuf::from("./test.txt");
 
-        let cmd = SeekerDaemonCommand {
-            action: super::SeekerDaemonAction::Index,
+        let cmd = DaemonCommand {
+            action: super::DaemonAction::Index,
             filepath: example_path.clone(),
         };
         let serialized: String = cmd.into();
-        let parsed = SeekerDaemonCommand::try_from(serialized.as_str()).unwrap();
-        assert_eq!(parsed.action, SeekerDaemonAction::Index);
+        let parsed = DaemonCommand::try_from(serialized.as_str()).unwrap();
+        assert_eq!(parsed.action, DaemonAction::Index);
         assert_eq!(parsed.filepath, example_path);
     }
 }

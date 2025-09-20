@@ -2,7 +2,7 @@ use std::sync::Arc;
 use tokio::net::TcpListener;
 
 use seeker_daemon_server_core::{
-    error::DaemonServerResult, indexer::Indexer, server::SeekerDaemonServer,
+    error::DaemonServerResult, indexer::Indexer, server::DaemonServer,
 };
 
 // TODO: implement actual indexer
@@ -24,7 +24,7 @@ async fn main() -> DaemonServerResult<()> {
     let listener = TcpListener::bind("127.0.0.1:5151")
         .await
         .expect("Could not bind to port 5151");
-    let server = SeekerDaemonServer::new(listener, shared_indexer.clone())?;
+    let server = DaemonServer::new(listener, shared_indexer.clone())?;
     println!("Server started at port 5151");
     let _ = server.start().await;
 
