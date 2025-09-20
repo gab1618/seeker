@@ -17,9 +17,9 @@ impl TryFrom<&str> for DaemonAction {
         }
     }
 }
-impl Into<String> for DaemonAction {
-    fn into(self) -> String {
-        match self {
+impl From<DaemonAction> for String {
+    fn from(val: DaemonAction) -> Self {
+        match val {
             DaemonAction::Index => String::from("index"),
         }
     }
@@ -53,10 +53,10 @@ impl TryFrom<&str> for DaemonCommand {
     }
 }
 
-impl Into<String> for DaemonCommand {
-    fn into(self) -> String {
-        let str_action: String = self.action.into();
-        format!("{} {}", str_action, self.filepath.display())
+impl From<DaemonCommand> for String {
+    fn from(val: DaemonCommand) -> Self {
+        let str_action: String = val.action.into();
+        format!("{} {}", str_action, val.filepath.display())
     }
 }
 

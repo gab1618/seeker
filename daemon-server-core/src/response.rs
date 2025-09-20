@@ -6,10 +6,10 @@ pub struct DaemonResponse {
     pub status: DaemonResponseStatus,
 }
 
-impl Into<String> for &DaemonResponse {
-    fn into(self) -> String {
-        let str_status: String = (&self.status).into();
-        format!("{} {}", str_status, self.message)
+impl From<&DaemonResponse> for String {
+    fn from(val: &DaemonResponse) -> Self {
+        let str_status: String = (&val.status).into();
+        format!("{} {}", str_status, val.message)
     }
 }
 
@@ -35,9 +35,9 @@ pub enum DaemonResponseStatus {
     Err,
 }
 
-impl Into<String> for &DaemonResponseStatus {
-    fn into(self) -> String {
-        match self {
+impl From<&DaemonResponseStatus> for String {
+    fn from(val: &DaemonResponseStatus) -> Self {
+        match val {
             DaemonResponseStatus::Ok => "OK".to_string(),
             DaemonResponseStatus::Err => "ERR".to_string(),
         }
