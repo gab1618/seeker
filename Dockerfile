@@ -19,7 +19,7 @@ RUN cargo build --release --package seeker-hook && \
 FROM debian:bookworm-slim
 
 RUN apt-get update && \
-  apt-get install -y --no-install-recommends git openssh-server && \
+  apt-get install -y --no-install-recommends git openssh-server systemd systemd-sysv && \
   rm -rf /var/lib/apt/lists/*
 
 # Copy created repo
@@ -27,6 +27,7 @@ COPY --from=builder /repo/seeker.git /repo/seeker.git
 
 # Copy built binaries
 COPY --from=builder /build/target/release/seeker-hook /usr/bin/
+COPY --from=builder /build/target/release/seeker-daemon-process /usr/bin/
 RUN ln -s /usr/bin/seeker-hook /repo/seeker.git/hooks/post-receive
 
 # Setup SSH
@@ -41,7 +42,14 @@ RUN chown -R git:git /repo && \
 
 EXPOSE 22
 
-COPY ./entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# Setup daemon config
+COPY config/seeker-daemon-process.service /etc/systemd/system/
+RUN systemctl enable seeker-daemon-process
 
-ENTRYPOINT ["/entrypoint.sh"]
+# Disable the getty service that causes login prompts
+RUN systemctl mask getty@.service console-getty.service serial-getty@.service
+
+# Remove any existing getty services
+RUN rm -f /lib/systemd/system/getty.target.wants/getty@tty1.service
+
+CMD ["/sbin/init"]
