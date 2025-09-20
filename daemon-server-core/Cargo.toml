@@ -1,5 +1,5 @@
 [package]
-name = "daemon-server-core"
+name = "seeker-daemon-server-core"
 version = "0.1.0"
 edition = "2024"
 

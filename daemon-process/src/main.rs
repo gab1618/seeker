@@ -1,12 +1,12 @@
 use std::{sync::Arc};
 use tokio::net::TcpListener;
 
-use daemon_server_core::{indexer::Indexer, server::SeekerDaemonServer, error::DaemonServerResult};
+use seeker_daemon_server_core::{indexer::Indexer, server::SeekerDaemonServer, error::DaemonServerResult};
 
 // TODO: implement actual indexer
 struct MockIndexer {}
 impl Indexer for MockIndexer {
-    fn index_file(&self, file_path: std::path::PathBuf) -> daemon_server_core::error::DaemonServerResult<()> {
+    fn index_file(&self, file_path: std::path::PathBuf) -> seeker_daemon_server_core::error::DaemonServerResult<()> {
         println!("Indexing file: {}", file_path.display());
 
         Ok(())

@@ -3,7 +3,7 @@ use std::{
     path::PathBuf,
 };
 
-use daemon_server_core::{command::SeekerDaemonCommand, response::SeekerDaemonResponse};
+use seeker_daemon_server_core::{command::{SeekerDaemonAction, SeekerDaemonCommand}, response::SeekerDaemonResponse};
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader, BufWriter},
     net::TcpStream,
@@ -28,7 +28,7 @@ impl SeekerDaemonClient {
         file_path: PathBuf,
     ) -> DaemonClientResult<SeekerDaemonResponse> {
         let cmd = SeekerDaemonCommand::new(
-            daemon_server_core::command::SeekerDaemonAction::Index,
+            SeekerDaemonAction::Index,
             file_path,
         );
 

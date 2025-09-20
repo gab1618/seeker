@@ -4,8 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-daemon-server-core = {workspace = true, features = ["api"]}
+seeker-daemon-server-core = {workspace = true, features = ["api"]}
 tokio = {workspace = true}
 
 [dev-dependencies]
-daemon-server-core = {workspace = true, features = ["api", "server"]}
+seeker-daemon-server-core = {workspace = true, features = ["api", "server"]}

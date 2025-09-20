@@ -69,21 +69,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2fd1289c04a9ea8cb22300a459a72a385d7c73d3259e2ed7dcb2af674838cfa9"
 
 [[package]]
-name = "daemon-process"
-version = "0.1.0"
-dependencies = [
- "daemon-server-core",
- "tokio",
-]
-
-[[package]]
-name = "daemon-server-core"
-version = "0.1.0"
-dependencies = [
- "tokio",
-]
-
-[[package]]
 name = "displaydoc"
 version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -546,7 +531,22 @@ checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 name = "seeker-daemon-client"
 version = "0.1.0"
 dependencies = [
- "daemon-server-core",
+ "seeker-daemon-server-core",
+ "tokio",
+]
+
+[[package]]
+name = "seeker-daemon-process"
+version = "0.1.0"
+dependencies = [
+ "seeker-daemon-server-core",
+ "tokio",
+]
+
+[[package]]
+name = "seeker-daemon-server-core"
+version = "0.1.0"
+dependencies = [
  "tokio",
 ]
 
