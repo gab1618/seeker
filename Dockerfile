@@ -49,7 +49,4 @@ RUN systemctl enable seeker-daemon-process
 # Disable the getty service that causes login prompts
 RUN systemctl mask getty@.service console-getty.service serial-getty@.service
 
-# Remove any existing getty services
-RUN rm -f /lib/systemd/system/getty.target.wants/getty@tty1.service
-
 CMD ["/sbin/init"]
