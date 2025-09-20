@@ -12,7 +12,7 @@ A git repository provider that indexes through your documents and send them to a
 
 ### Configuration
 
-1. First of all, generate a ssh key pair just like you do for Github ssh access.
+1. First of all, generate a ssh key pair just like how you do for Github ssh access.
 2. At the root of the repository, create a file named "authorized_keys" and copy your generated public key into it. Each public key you might want to add to it must be separated by a line break.
 
 ### Building
