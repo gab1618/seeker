@@ -36,9 +36,7 @@ RUN useradd -m -d /repo git && \
   chmod 700 /repo/.ssh && \
   ssh-keygen -A
 
-COPY authorized_keys /repo/.ssh/
-RUN chown -R git:git /repo && \
-  chmod 600 /repo/.ssh/authorized_keys
+RUN chown -R git:git /repo
 
 EXPOSE 22
 
