@@ -1,6 +1,6 @@
 ## Seeker
 
-A git repository provider that indexes through your documents and send them to a vector database.
+A git repository provider that indexes through your documents and send them to a search-optimized database. In this case, the goal is to index it into an Elastic Search index.
 
 **Disclaimer**: as you can probably notice, this is still work in progress. Of all the features I planned, none of them are implemented yet, but you can always have fun looking at my messy code.
 
