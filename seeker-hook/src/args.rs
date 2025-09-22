@@ -1,4 +1,4 @@
-use std::io::BufRead;
+use crate::error::SeekerHookErr;
 
 pub struct GitArgs {
     #[allow(dead_code)]
@@ -9,14 +9,14 @@ pub struct GitArgs {
 }
 
 impl TryFrom<&str> for GitArgs {
-    type Error = ParseGitArgsErr;
+    type Error = SeekerHookErr;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let mut args_parts = value.split_whitespace();
 
-        let old_rev = args_parts.next().ok_or(ParseGitArgsErr::InvalidFormat)?;
-        let new_rev = args_parts.next().ok_or(ParseGitArgsErr::InvalidFormat)?;
-        let ref_name = args_parts.next().ok_or(ParseGitArgsErr::InvalidFormat)?;
+        let old_rev = args_parts.next().ok_or(SeekerHookErr::InvalidGitArgs)?;
+        let new_rev = args_parts.next().ok_or(SeekerHookErr::InvalidGitArgs)?;
+        let ref_name = args_parts.next().ok_or(SeekerHookErr::InvalidGitArgs)?;
 
         Ok(Self {
             old_rev: old_rev.to_owned(),
@@ -24,13 +24,6 @@ impl TryFrom<&str> for GitArgs {
             ref_name: ref_name.to_owned(),
         })
     }
-}
-
-#[derive(Debug)]
-pub enum ParseGitArgsErr {
-    InvalidFormat,
-    NullInput,
-    InputErr,
 }
 
 #[cfg(test)]

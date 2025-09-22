@@ -1,10 +1,12 @@
 use std::path::PathBuf;
 use std::time::SystemTime;
 
+use crate::error::{SeekerHookErr, SeekerHookResult};
+
 pub struct Logger {}
 
 impl Logger {
-    pub fn setup_logging(log_file_path: PathBuf) -> Result<(), fern::InitError> {
+    pub fn setup_logging(log_file_path: PathBuf) -> SeekerHookResult<()> {
         fern::Dispatch::new()
             .format(|out, message, record| {
                 out.finish(format_args!(
@@ -17,8 +19,9 @@ impl Logger {
             })
             .level(log::LevelFilter::Debug)
             .chain(std::io::stdout())
-            .chain(fern::log_file(log_file_path)?)
-            .apply()?;
+            .chain(fern::log_file(log_file_path).map_err(|_| SeekerHookErr::SetupLogFile)?)
+            .apply()
+            .map_err(|_| SeekerHookErr::ApplyLogConfig)?;
         Ok(())
     }
 }
