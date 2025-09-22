@@ -29,6 +29,7 @@ COPY --from=builder /repo/seeker.git /repo/seeker.git
 COPY --from=builder /build/target/release/seeker-hook /usr/bin/
 COPY --from=builder /build/target/release/seeker-daemon-process /usr/bin/
 RUN ln -s /usr/bin/seeker-hook /repo/seeker.git/hooks/post-receive
+RUN mkdir -p /var/lib/seeker-daemon
 
 # Setup SSH
 RUN useradd -m -d /repo git && \
