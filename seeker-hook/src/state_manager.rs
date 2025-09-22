@@ -36,14 +36,14 @@ impl StateManager {
         Some(last_indexed_commit)
     }
     #[allow(dead_code)]
-    pub fn save_state_value(&self, state: StateValue, commit: &str) -> std::io::Result<()> {
+    pub fn save_state_value(&self, state: StateValue, value: &str) -> std::io::Result<()> {
         let mut f = OpenOptions::new()
             .create(true)
             .truncate(true)
             .write(true)
             .open(self.get_state_file_path(state))?;
 
-        write!(f, "{commit}").unwrap();
+        write!(f, "{value}").unwrap();
 
         Ok(())
     }
