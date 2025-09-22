@@ -1,10 +1,11 @@
 use std::path::PathBuf;
 
-use args::parse_git_args;
 use changes_tracker::ChangesTracker;
 use logger::Logger;
 use setup_repo::setup_repo;
 use state_manager::StateManager;
+
+use crate::args::GitArgs;
 
 #[cfg(test)]
 mod test;
@@ -17,7 +18,13 @@ mod state_manager;
 
 fn main() {
     let stdin = std::io::stdin();
-    let git_args = parse_git_args(&stdin).expect("Could not parse args");
+    let stdin_line = stdin
+        .lines()
+        .next()
+        .expect("Could not read hook input")
+        .expect("Could not read hook input");
+
+    let git_args = GitArgs::try_from(stdin_line.as_str()).unwrap();
 
     log::info!("Starting setup");
     let repo_path: PathBuf = std::env::args().nth(1).unwrap_or(".".to_string()).into();
