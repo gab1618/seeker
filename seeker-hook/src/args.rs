@@ -1,4 +1,4 @@
-use std::io::BufRead;
+use crate::error::SeekerHookErr;
 
 pub struct GitArgs {
     #[allow(dead_code)]
@@ -8,31 +8,36 @@ pub struct GitArgs {
     pub ref_name: String,
 }
 
-#[derive(Debug)]
-pub enum ParseGitArgsErr {
-    InvalidFormat,
-    NullInput,
-    InputErr,
+impl TryFrom<&str> for GitArgs {
+    type Error = SeekerHookErr;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        let mut args_parts = value.split_whitespace();
+
+        let old_rev = args_parts.next().ok_or(SeekerHookErr::InvalidGitArgs)?;
+        let new_rev = args_parts.next().ok_or(SeekerHookErr::InvalidGitArgs)?;
+        let ref_name = args_parts.next().ok_or(SeekerHookErr::InvalidGitArgs)?;
+
+        Ok(Self {
+            old_rev: old_rev.to_owned(),
+            new_rev: new_rev.to_owned(),
+            ref_name: ref_name.to_owned(),
+        })
+    }
 }
 
-pub fn parse_git_args(stdin: &std::io::Stdin) -> Result<GitArgs, ParseGitArgsErr> {
-    let hook_args_line = stdin
-        .lock()
-        .lines()
-        .next()
-        .ok_or(ParseGitArgsErr::NullInput)?
-        .map_err(|_| ParseGitArgsErr::InputErr)?;
+#[cfg(test)]
+mod tests {
+    use crate::args::GitArgs;
 
-    let hook_args: Vec<&str> = hook_args_line.split_whitespace().collect();
-    if hook_args.len() != 3 {
-        return Err(ParseGitArgsErr::InvalidFormat);
+    #[test]
+    fn test_parse_args() {
+        let example_input =
+            "ab123456789012345678901234567890 cd987654321098765432109876543210 refs/heads/main";
+        let parsed = GitArgs::try_from(example_input).unwrap();
+
+        assert_eq!(parsed.old_rev, "ab123456789012345678901234567890");
+        assert_eq!(parsed.new_rev, "cd987654321098765432109876543210");
+        assert_eq!(parsed.ref_name, "refs/heads/main");
     }
-
-    let parsed_args = GitArgs {
-        old_rev: hook_args[0].to_owned(),
-        new_rev: hook_args[1].to_owned(),
-        ref_name: hook_args[2].to_owned(),
-    };
-
-    Ok(parsed_args)
 }

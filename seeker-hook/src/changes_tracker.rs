@@ -1,7 +1,7 @@
 use git2::{self, DiffOptions, Oid, Repository};
 use std::path::{Path, PathBuf};
 
-use crate::state_manager::StateManager;
+use crate::state_manager::{StateManager, StateValue};
 
 #[derive(Debug)]
 pub enum ChangesTrackerErr {
@@ -36,7 +36,7 @@ impl<'a> ChangesTracker<'a> {
     ) -> Result<impl Iterator<Item = ChangeEntry> + 'a, ChangesTrackerErr> {
         let last_indexed_commit = self
             .state_manager
-            .get_state_file_value(crate::state_manager::StateValue::LastIndexedCommit);
+            .get_state_file_value(StateValue::LastIndexedCommit);
 
         let last_commit_oid = self
             .repo

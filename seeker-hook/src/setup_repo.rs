@@ -11,7 +11,7 @@ pub enum SetupRepoErr {
 }
 
 /// If repo's head does point to an inexistent ref, so point it to the newly pushed one
-pub fn setup_repo<P: AsRef<Path>>(mount_path: P, args: GitArgs) -> Result<(), SetupRepoErr> {
+pub fn setup_repo<P: AsRef<Path>>(mount_path: P, args: &GitArgs) -> Result<(), SetupRepoErr> {
     let repo = Repository::open_bare(mount_path).map_err(|_| SetupRepoErr::OpenRepo)?;
 
     if repo.head().is_ok() {
