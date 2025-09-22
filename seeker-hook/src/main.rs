@@ -4,7 +4,7 @@ use changes_tracker::ChangesTracker;
 use setup_repo::setup_repo;
 use state_manager::StateManager;
 
-use crate::{args::GitArgs, error::SeekerHookResult};
+use crate::{args::GitArgs, error::SeekerHookResult, state_manager::StateValue};
 
 #[cfg(test)]
 mod test;
@@ -28,7 +28,7 @@ fn main() -> SeekerHookResult<()> {
 
     let repo_path: PathBuf = std::env::args().nth(1).unwrap_or(".".to_string()).into();
 
-    setup_repo(&repo_path, git_args).unwrap();
+    setup_repo(&repo_path, &git_args).unwrap();
 
     let manager = StateManager::new(repo_path.clone());
     let tracker = ChangesTracker::new(repo_path, &manager).expect("Could not get file changes");
@@ -37,6 +37,8 @@ fn main() -> SeekerHookResult<()> {
         let (filepath, _) = entry.unwrap();
         println!("Indexing file {}", filepath.to_str().unwrap());
     }
+
+    manager.save_state_value(StateValue::LastIndexedCommit, &git_args.new_rev)?;
 
     Ok(())
 }

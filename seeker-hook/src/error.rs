@@ -2,7 +2,7 @@
 pub enum SeekerHookErr {
     InvalidGitArgs,
     SetupLogFile,
-    ApplyLogConfig
+    SaveState,
 }
 
 pub type SeekerHookResult<T> = Result<T, SeekerHookErr>;
