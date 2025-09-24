@@ -49,7 +49,7 @@ impl<T: Indexer + Send + Sync + 'static> DaemonServer<T> {
 
         match parsed_command.action {
             DaemonAction::Index => {
-                (*indexer).index_file(parsed_command.filepath)?;
+                indexer.index_file(parsed_command.filepath)?;
             }
         }
 
