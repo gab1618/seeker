@@ -540,7 +540,9 @@ name = "seeker-hook"
 version = "0.1.0"
 dependencies = [
  "git2",
+ "seeker-daemon-client",
  "tempfile",
+ "tokio",
 ]
 
 [[package]]
