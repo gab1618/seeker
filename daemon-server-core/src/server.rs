@@ -26,7 +26,7 @@ impl<T: Indexer + Send + Sync + 'static> DaemonServer<T> {
             while let Ok((soc, _addr)) = self.listener.accept().await {
                 let indexer = self.indexer.clone();
                 if let Err(err) = Self::handle_connection(soc, indexer).await {
-                    eprintln!("{:#?}", err);
+                    log::error!("{:#?}", err);
                 }
             }
 
@@ -49,7 +49,10 @@ impl<T: Indexer + Send + Sync + 'static> DaemonServer<T> {
 
         match parsed_command.action {
             DaemonAction::Index => {
-                indexer.index_file(parsed_command.filepath)?;
+                // TODO: avoid this clone. Perhaps changing the indexer trait definition to use
+                // path references instead
+                indexer.index_file(parsed_command.filepath.clone())?;
+                log::info!("Indexed file {}", parsed_command.filepath.display());
             }
         }
 
