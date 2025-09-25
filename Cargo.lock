@@ -516,7 +516,15 @@ checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 name = "seeker-daemon-client"
 version = "0.1.0"
 dependencies = [
- "seeker-daemon-server-core",
+ "seeker-daemon-core",
+ "tokio",
+]
+
+[[package]]
+name = "seeker-daemon-core"
+version = "0.1.0"
+dependencies = [
+ "log",
  "tokio",
 ]
 
@@ -525,16 +533,8 @@ name = "seeker-daemon-process"
 version = "0.1.0"
 dependencies = [
  "log",
- "seeker-daemon-server-core",
+ "seeker-daemon-core",
  "systemd-journal-logger",
- "tokio",
-]
-
-[[package]]
-name = "seeker-daemon-server-core"
-version = "0.1.0"
-dependencies = [
- "log",
  "tokio",
 ]
 

@@ -1,4 +1,4 @@
-use seeker_daemon_server_core::{
+use seeker_daemon_core::{
     error::DaemonServerResult, indexer::Indexer, server::DaemonServer,
 };
 use std::sync::{

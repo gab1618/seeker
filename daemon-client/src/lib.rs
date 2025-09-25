@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use seeker_daemon_server_core::{
+use seeker_daemon_core::{
     command::{DaemonAction, DaemonCommand},
     response::DaemonResponse,
 };
