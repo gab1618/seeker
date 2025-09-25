@@ -5,4 +5,6 @@ edition = "2024"
 
 [dependencies]
 seeker-daemon-server-core = {workspace = true, features = ["server"]}
+systemd-journal-logger = "2.2.2"
 tokio = {workspace = true}
+log = {workspace = true}
