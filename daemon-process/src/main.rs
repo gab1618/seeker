@@ -1,9 +1,15 @@
 use std::sync::Arc;
 use tokio::net::TcpListener;
 
-use seeker_daemon_server_core::{
-    error::DaemonServerResult, indexer::Indexer, server::DaemonServer,
+use seeker_daemon_server_core::{indexer::Indexer, server::DaemonServer};
+
+use crate::{
+    error::{DaemonProcessErr, DaemonProcessResult},
+    log_config::setup_logging,
 };
+
+mod error;
+mod log_config;
 
 // TODO: implement actual indexer
 struct MockIndexer {}
@@ -19,19 +25,21 @@ impl Indexer for MockIndexer {
 }
 
 #[tokio::main]
-async fn main() -> DaemonServerResult<()> {
+async fn main() -> DaemonProcessResult<()> {
+    setup_logging()?;
     let shared_indexer = Arc::new(MockIndexer {});
     let listener = TcpListener::bind("127.0.0.1:5151")
         .await
-        .expect("Could not bind to port 5151");
-    let server = DaemonServer::new(listener, shared_indexer.clone())?;
-    println!("Server started at port 5151");
-    let _ = server.start().await;
+        .map_err(|_| DaemonProcessErr::SetupServer)?;
+    let server = DaemonServer::new(listener, shared_indexer.clone())
+        .map_err(|_| DaemonProcessErr::StartServer)?;
+    log::info!("Server started at port 5151");
+    server.start().await;
 
     tokio::signal::ctrl_c()
         .await
-        .expect("Could not interrupt server");
-    println!("Server stopped");
+        .map_err(|_| DaemonProcessErr::InterruptServer)?;
+    log::info!("Server stopped");
 
     Ok(())
 }
