@@ -2,13 +2,13 @@
 members = [
   "daemon-client",
   "daemon-process",
-  "daemon-server-core",
+  "daemon-core",
   "seeker-hook"
 ]
 resolver = "3"
 
 [workspace.dependencies]
-seeker-daemon-server-core = {path = "daemon-server-core"}
+seeker-daemon-core = {path = "daemon-core"}
 seeker-daemon-client = {path = "daemon-client"}
 tokio = { version = "1.47.1", features = ["full"] }
 log = "0.4.28"
