@@ -3,7 +3,8 @@ members = [
   "daemon-client",
   "daemon-process",
   "daemon-core",
-  "seeker-hook"
+  "seeker-hook",
+  "elasticsearch-indexer"
 ]
 resolver = "3"
 

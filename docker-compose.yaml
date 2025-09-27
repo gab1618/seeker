@@ -79,6 +79,12 @@ services:
       interval: 10s
       timeout: 10s
       retries: 30
+  seeker:
+    build: .
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
 
 volumes:
   dev-elasticsearch:
