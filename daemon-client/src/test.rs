@@ -18,8 +18,9 @@ impl MockIndexer {
     }
 }
 
+#[async_trait::async_trait]
 impl Indexer for MockIndexer {
-    fn index_file(&self, _file_path: std::path::PathBuf) -> anyhow::Result<()> {
+    async fn index_file<'a>(&'a self, _file_path: std::path::PathBuf) -> anyhow::Result<()> {
         self.index_calls_count.fetch_add(1, Ordering::SeqCst);
         Ok(())
     }

@@ -51,7 +51,7 @@ impl<T: Indexer + Send + Sync + 'static> DaemonServer<T> {
             DaemonAction::Index => {
                 // TODO: avoid this clone. Perhaps changing the indexer trait definition to use
                 // path references instead
-                indexer.index_file(parsed_command.filepath.clone())?;
+                indexer.index_file(parsed_command.filepath.clone()).await?;
                 log::info!("Indexed file {}", parsed_command.filepath.display());
             }
         }

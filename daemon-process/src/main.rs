@@ -10,8 +10,13 @@ use seeker_env::EnvArgs;
 
 // TODO: implement actual indexer
 struct MockIndexer {}
+
+#[async_trait::async_trait]
 impl Indexer for MockIndexer {
-    fn index_file(&self, file_path: std::path::PathBuf) -> anyhow::Result<()> {
+    async fn index_file<'a>(
+        &'a self,
+        file_path: std::path::PathBuf,
+    ) -> anyhow::Result<()> {
         println!("Indexing file: {}", file_path.display());
 
         Ok(())
