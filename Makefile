@@ -16,4 +16,4 @@ build:
 
 .PHONY: run
 run:
-	podman run -it -v ./config/.ssh:/repo/.ssh -p 2222:22 seeker
+	podman run -it -v ./config/.ssh:/repo/.ssh -p 2222:22 --name seeker seeker
