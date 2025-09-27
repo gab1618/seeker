@@ -549,6 +549,7 @@ version = "0.1.0"
 dependencies = [
  "git2",
  "seeker-daemon-client",
+ "seeker-env",
  "tempfile",
  "tokio",
 ]

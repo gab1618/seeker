@@ -28,7 +28,9 @@ COPY --from=builder /repo/seeker.git /repo/seeker.git
 # Copy built binaries
 COPY --from=builder /build/target/release/seeker-hook /usr/bin/
 COPY --from=builder /build/target/release/seeker-daemon-process /usr/bin/
-RUN ln -s /usr/bin/seeker-hook /repo/seeker.git/hooks/post-receive
+COPY ./config/hooks/post-receive.sh /repo/seeker.git/hooks/post-receive
+RUN chmod +x /repo/seeker.git/hooks/post-receive
+
 RUN mkdir -p /var/lib/seeker-daemon
 
 # Setup SSH

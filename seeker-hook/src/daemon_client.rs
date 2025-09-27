@@ -3,8 +3,8 @@ use tokio::net::TcpStream;
 
 use crate::error::{SeekerHookErr, SeekerHookResult};
 
-pub async fn get_daemon_client() -> SeekerHookResult<DaemonClient> {
-    let conn = TcpStream::connect("127.0.0.1:5151")
+pub async fn get_daemon_client(bind_url: String) -> SeekerHookResult<DaemonClient> {
+    let conn = TcpStream::connect(bind_url)
         .await
         .map_err(|_| SeekerHookErr::StartDaemonClient)?;
     let client = DaemonClient::new(conn);
