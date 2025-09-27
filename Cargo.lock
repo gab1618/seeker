@@ -534,9 +534,14 @@ version = "0.1.0"
 dependencies = [
  "log",
  "seeker-daemon-core",
+ "seeker-env",
  "systemd-journal-logger",
  "tokio",
 ]
+
+[[package]]
+name = "seeker-env"
+version = "0.1.0"
 
 [[package]]
 name = "seeker-hook"

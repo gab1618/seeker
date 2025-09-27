@@ -43,6 +43,7 @@ EXPOSE 22
 
 # Setup daemon config
 COPY config/seeker-daemon-process.service /etc/systemd/system/
+COPY config/env.conf /etc/seeker/
 RUN systemctl enable seeker-daemon-process
 
 # Disable the getty service that causes login prompts
