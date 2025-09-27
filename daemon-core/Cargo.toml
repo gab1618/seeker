@@ -8,6 +8,7 @@ log = {workspace = true}
 tokio = {workspace = true}
 thiserror = {workspace = true}
 anyhow = {workspace = true}
+async-trait = {workspace = true}
 
 [features]
 server = ["indexer", "api"]
