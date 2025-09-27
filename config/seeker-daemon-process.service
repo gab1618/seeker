@@ -10,6 +10,7 @@ RestartSec=5
 User=daemon
 Group=daemon
 WorkingDirectory=/var/lib/seeker-daemon
+EnvironmentFile=/etc/seeker/env.conf
 
 [Install]
 WantedBy=multi-user.target
