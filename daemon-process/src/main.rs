@@ -13,9 +13,11 @@ mod log_config;
 
 // TODO: implement actual indexer
 struct MockIndexer {}
+
+#[async_trait::async_trait]
 impl Indexer for MockIndexer {
-    fn index_file(
-        &self,
+    async fn index_file<'a>(
+        &'a self,
         file_path: std::path::PathBuf,
     ) -> seeker_daemon_core::error::DaemonServerResult<()> {
         println!("Indexing file: {}", file_path.display());

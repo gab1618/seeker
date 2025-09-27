@@ -8,3 +8,4 @@ seeker-daemon-core = {workspace = true, features = ["server"]}
 systemd-journal-logger = "2.2.2"
 tokio = {workspace = true}
 log = {workspace = true}
+async-trait = {workspace = true}

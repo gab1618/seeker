@@ -12,3 +12,4 @@ seeker-daemon-core = {path = "daemon-core"}
 seeker-daemon-client = {path = "daemon-client"}
 tokio = { version = "1.47.1", features = ["full"] }
 log = "0.4.28"
+async-trait = "0.1.89"

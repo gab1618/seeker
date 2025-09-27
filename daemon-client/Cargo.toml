@@ -9,3 +9,4 @@ tokio = {workspace = true}
 
 [dev-dependencies]
 seeker-daemon-core = {workspace = true, features = ["api", "server"]}
+async-trait = {workspace = true}
