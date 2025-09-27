@@ -17,3 +17,7 @@ build:
 .PHONY: run
 run:
 	podman run -it -v ./config/.ssh:/repo/.ssh -p 2222:22 --name seeker seeker
+
+.PHONY: watch-daemon-logs
+watch-daemon-logs:
+	podman exec -it seeker journalctl -u seeker-daemon-process -f
