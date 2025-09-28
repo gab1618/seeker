@@ -4,7 +4,8 @@ use tokio::net::TcpListener;
 use seeker_daemon_core::{indexer::Indexer, server::DaemonServer};
 
 use crate::{
-    error::{DaemonProcessErr, DaemonProcessResult}, log_config::setup_logging
+    error::{DaemonProcessErr, DaemonProcessResult},
+    log_config::{setup_logging, unwrap_log},
 };
 
 mod error;
@@ -26,8 +27,8 @@ impl Indexer for MockIndexer {
 
 #[tokio::main]
 async fn main() -> DaemonProcessResult<()> {
-    let env_args = EnvArgs::load().unwrap();
     setup_logging()?;
+    let env_args = unwrap_log(EnvArgs::load());
     let shared_indexer = Arc::new(MockIndexer {});
     let listener = TcpListener::bind(&env_args.bind_url)
         .await
