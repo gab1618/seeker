@@ -1,0 +1,14 @@
+[package]
+name = "seeker-daemon-core"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+log = {workspace = true}
+tokio = {workspace = true}
+thiserror = {workspace = true}
+
+[features]
+server = ["indexer", "api"]
+indexer = []
+api = []

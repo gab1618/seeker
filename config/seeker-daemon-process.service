@@ -1,0 +1,16 @@
+[Unit]
+Description=Seeker daemon
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/seeker-daemon-process
+Restart=always
+RestartSec=5
+User=daemon
+Group=daemon
+WorkingDirectory=/var/lib/seeker-daemon
+EnvironmentFile=/etc/seeker/env.conf
+
+[Install]
+WantedBy=multi-user.target

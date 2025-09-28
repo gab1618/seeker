@@ -1,0 +1,18 @@
+[workspace]
+members = [
+  "daemon-client",
+  "daemon-process",
+  "daemon-core",
+  "seeker-hook",
+  "seeker-env"
+]
+resolver = "3"
+
+[workspace.dependencies]
+seeker-daemon-core = {path = "daemon-core"}
+seeker-daemon-client = {path = "daemon-client"}
+seeker-env = {path = "seeker-env"}
+tokio = { version = "1.47.1", features = ["full"] }
+log = "0.4.28"
+thiserror = "2.0.16"
+anyhow = "1.0.100"

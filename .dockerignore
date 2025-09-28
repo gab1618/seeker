@@ -1,0 +1,6 @@
+.git
+.github
+.gitignore
+Makefile
+config/.ssh
+README.md

@@ -1,0 +1,13 @@
+[package]
+name = "seeker-daemon-process"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+seeker-daemon-core = {workspace = true, features = ["server"]}
+systemd-journal-logger = "2.2.2"
+tokio = {workspace = true}
+log = {workspace = true}
+seeker-env = {workspace = true}
+thiserror = {workspace = true}
+anyhow = {workspace = true}
