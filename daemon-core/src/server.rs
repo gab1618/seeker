@@ -8,7 +8,7 @@ use crate::{
     command::{DaemonAction, DaemonCommand},
     error::DaemonServerError,
     indexer::Indexer,
-    response::DaemonResponse,
+    response::{DaemonResponse, DaemonResponseStatus},
 };
 pub struct DaemonServer<T: Indexer + Send + Sync + 'static> {
     listener: TcpListener,
@@ -43,7 +43,7 @@ impl<T: Indexer + Send + Sync + 'static> DaemonServer<T> {
 
         r.read_line(&mut input)
             .await
-            .map_err(|_| DaemonServerError::ReadRequest)?;
+            .map_err(DaemonServerError::ReadRequest)?;
 
         let parsed_command: DaemonCommand = input.as_str().try_into()?;
 
@@ -58,16 +58,14 @@ impl<T: Indexer + Send + Sync + 'static> DaemonServer<T> {
 
         let resp = DaemonResponse {
             message: "Command received".to_owned(),
-            status: crate::response::DaemonResponseStatus::Ok,
+            status: DaemonResponseStatus::Ok,
         };
 
         let str_response: String = (&resp).into();
         w.write_all(str_response.as_bytes())
             .await
-            .map_err(|_| DaemonServerError::SendResponse)?;
-        w.flush()
-            .await
-            .map_err(|_| DaemonServerError::SendResponse)?;
+            .map_err(DaemonServerError::SendResponse)?;
+        w.flush().await.map_err(DaemonServerError::SendResponse)?;
 
         Ok(())
     }
