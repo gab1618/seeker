@@ -1,18 +1,11 @@
-use std::fmt;
+use thiserror::Error;
 
-#[derive(Debug)]
+#[derive(Error, Debug)]
 pub enum DaemonProcessErr {
+    #[error("Could not setup logger")]
     SetupLogger,
+    #[error("Could not start logger")]
     StartLogger,
 }
 
 pub type DaemonProcessResult<T> = Result<T, DaemonProcessErr>;
-
-impl fmt::Display for DaemonProcessErr {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            DaemonProcessErr::SetupLogger => write!(f, "Could not setup logger"),
-            DaemonProcessErr::StartLogger => write!(f, "Could not start logger"),
-        }
-    }
-}

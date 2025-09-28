@@ -1,26 +1,19 @@
-use std::fmt;
+use thiserror::Error;
 
-#[derive(Debug)]
+#[derive(Error, Debug)]
 pub enum DaemonServerError {
+    #[error("Could not parse command")]
     ParseCommand,
+    #[error("Unreachable")]
     Unreachable,
+    #[error("Could not read request")]
     ReadRequest,
+    #[error("Could not send response")]
     SendResponse,
+    #[error("Could not start server")]
     StartServer,
+    #[error("Could not parse response")]
     ParseResponse,
 }
 
 pub type DaemonServerResult<T> = Result<T, DaemonServerError>;
-
-impl fmt::Display for DaemonServerError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            DaemonServerError::ParseCommand => write!(f, "Could not parse command"),
-            DaemonServerError::Unreachable => write!(f, "UNREACHABLE"),
-            DaemonServerError::ReadRequest => write!(f, "Could not read request"),
-            DaemonServerError::SendResponse => write!(f, "Could not send response"),
-            DaemonServerError::StartServer => write!(f, "Could not start server"),
-            DaemonServerError::ParseResponse => write!(f, "Could not parse response"),
-        }
-    }
-}

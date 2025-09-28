@@ -9,3 +9,5 @@ systemd-journal-logger = "2.2.2"
 tokio = {workspace = true}
 log = {workspace = true}
 seeker-env = {workspace = true}
+thiserror = {workspace = true}
+anyhow = {workspace = true}
