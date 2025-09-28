@@ -7,7 +7,7 @@ help:
 
 .PHONY: setup
 setup:
-	touch ./config/.ssh/authorized_keys
+	touch ./.seeker/.ssh/authorized_keys
 
 .PHONY: build
 build:
@@ -16,7 +16,7 @@ build:
 
 .PHONY: run
 run:
-	podman run -it -v ./config/.ssh:/repo/.ssh -p 2222:22 --name seeker seeker
+	podman run -it -v ./.seeker/.ssh:/repo/.ssh -p 2222:22 --name seeker seeker
 
 .PHONY: watch-daemon-logs
 watch-daemon-logs:

@@ -1,5 +1,5 @@
-authorized_keys
 .env
+.seeker/.ssh/*
 
 # Added by cargo
 
