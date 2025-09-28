@@ -9,7 +9,7 @@ use tokio::{
     net::TcpStream,
 };
 
-use crate::error::{DaemonClientErr, DaemonClientResult};
+use crate::error::DaemonClientErr;
 
 pub mod error;
 #[cfg(test)]
@@ -23,10 +23,7 @@ impl DaemonClient {
     pub fn new(conn: TcpStream) -> Self {
         Self { conn }
     }
-    pub async fn index_file(
-        &mut self,
-        file_path: PathBuf,
-    ) -> DaemonClientResult<DaemonResponse> {
+    pub async fn index_file(&mut self, file_path: PathBuf) -> anyhow::Result<DaemonResponse> {
         let cmd = DaemonCommand::new(DaemonAction::Index, file_path);
 
         let (r, w) = self.conn.split();
@@ -36,20 +33,15 @@ impl DaemonClient {
 
         let str_cmd: String = cmd.into();
         let server_req = format!("{str_cmd}\n");
-        w.write_all(server_req.as_bytes())
-            .await
-            .map_err(|_| DaemonClientErr::SendIndexReq)?;
-        w.flush().await.map_err(|_| DaemonClientErr::SendIndexReq)?;
+        w.write_all(server_req.as_bytes()).await?;
+        w.flush().await?;
 
         let mut response_input = String::new();
         r.read_line(&mut response_input)
             .await
             .map_err(|_| DaemonClientErr::RecvServerResponse)?;
 
-        let parsed_response: DaemonResponse = response_input
-            .as_str()
-            .try_into()
-            .map_err(|_| DaemonClientErr::ParseServerResponse)?;
+        let parsed_response: DaemonResponse = response_input.as_str().try_into()?;
 
         Ok(parsed_response)
     }

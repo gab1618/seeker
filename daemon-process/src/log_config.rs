@@ -1,14 +1,8 @@
 use systemd_journal_logger::JournalLog;
 
-use crate::error::{DaemonProcessErr, DaemonProcessResult};
-
-pub fn setup_logging() -> DaemonProcessResult<()> {
-    JournalLog::new()
-        .map_err(|_| DaemonProcessErr::SetupLogger)?
-        .install()
-        .map_err(|_| DaemonProcessErr::StartLogger)?;
+pub fn setup_logging() -> anyhow::Result<()> {
+    JournalLog::new()?.install()?;
     log::set_max_level(log::LevelFilter::Info);
 
     Ok(())
 }
-

@@ -522,6 +522,7 @@ checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 name = "seeker-daemon-client"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "seeker-daemon-core",
  "thiserror",
  "tokio",
@@ -531,6 +532,7 @@ dependencies = [
 name = "seeker-daemon-core"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "log",
  "thiserror",
  "tokio",
@@ -553,6 +555,7 @@ dependencies = [
 name = "seeker-env"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "thiserror",
 ]
 

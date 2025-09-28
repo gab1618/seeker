@@ -7,6 +7,7 @@ edition = "2024"
 log = {workspace = true}
 tokio = {workspace = true}
 thiserror = {workspace = true}
+anyhow = {workspace = true}
 
 [features]
 server = ["indexer", "api"]

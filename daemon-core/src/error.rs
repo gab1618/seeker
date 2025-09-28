@@ -13,5 +13,3 @@ pub enum DaemonServerError {
     #[error("Could not parse response")]
     ParseResponse,
 }
-
-pub type DaemonServerResult<T> = Result<T, DaemonServerError>;

@@ -5,17 +5,13 @@ use seeker_daemon_core::{indexer::Indexer, server::DaemonServer};
 
 use crate::log_config::setup_logging;
 
-mod error;
 mod log_config;
 use seeker_env::EnvArgs;
 
 // TODO: implement actual indexer
 struct MockIndexer {}
 impl Indexer for MockIndexer {
-    fn index_file(
-        &self,
-        file_path: std::path::PathBuf,
-    ) -> seeker_daemon_core::error::DaemonServerResult<()> {
+    fn index_file(&self, file_path: std::path::PathBuf) -> anyhow::Result<()> {
         println!("Indexing file: {}", file_path.display());
 
         Ok(())

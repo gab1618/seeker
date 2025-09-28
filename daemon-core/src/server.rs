@@ -6,7 +6,7 @@ use tokio::{
 
 use crate::{
     command::{DaemonAction, DaemonCommand},
-    error::{DaemonServerError, DaemonServerResult},
+    error::DaemonServerError,
     indexer::Indexer,
     response::DaemonResponse,
 };
@@ -16,7 +16,7 @@ pub struct DaemonServer<T: Indexer + Send + Sync + 'static> {
 }
 
 impl<T: Indexer + Send + Sync + 'static> DaemonServer<T> {
-    pub fn new(listener: TcpListener, indexer: Arc<T>) -> DaemonServerResult<Self> {
+    pub fn new(listener: TcpListener, indexer: Arc<T>) -> anyhow::Result<Self> {
         Ok(Self { listener, indexer })
     }
     pub async fn start(self) {
@@ -34,7 +34,7 @@ impl<T: Indexer + Send + Sync + 'static> DaemonServer<T> {
         });
         let _ = rx.await;
     }
-    async fn handle_connection(mut soc: TcpStream, indexer: Arc<T>) -> DaemonServerResult<()> {
+    async fn handle_connection(mut soc: TcpStream, indexer: Arc<T>) -> anyhow::Result<()> {
         let mut input = String::new();
 
         let (mut r, mut w) = soc.split();
