@@ -1,3 +1,5 @@
+use crate::error::SeekerEnvErr;
+
 pub mod error;
 
 pub struct EnvArgs {
@@ -6,7 +8,8 @@ pub struct EnvArgs {
 
 impl EnvArgs {
     pub fn load() -> anyhow::Result<Self> {
-        let daemon_bind_url_env = std::env::var("SEEKER_DAEMON_BIND_URL")?;
+        let daemon_bind_url_env = std::env::var("SEEKER_DAEMON_BIND_URL")
+            .map_err(|e| SeekerEnvErr::LoadDaemonBindUrl { source: e })?;
         Ok(Self {
             bind_url: daemon_bind_url_env,
         })
