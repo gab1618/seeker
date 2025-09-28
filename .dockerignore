@@ -3,3 +3,4 @@
 .gitignore
 Makefile
 config/.ssh
+README.md
