@@ -4,8 +4,6 @@ use thiserror::Error;
 pub enum DaemonServerError {
     #[error("Could not parse command")]
     ParseCommand,
-    #[error("Unreachable")]
-    Unreachable,
     #[error("Could not read request")]
     ReadRequest,
     #[error("Could not send response")]

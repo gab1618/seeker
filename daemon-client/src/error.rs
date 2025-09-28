@@ -8,8 +8,6 @@ pub enum DaemonClientErr {
     RecvServerResponse,
     #[error("Could not parse server response")]
     ParseServerResponse,
-    #[error("Unreachable")]
-    Unreacheable,
 }
 
 pub type DaemonClientResult<T> = Result<T, DaemonClientErr>;
