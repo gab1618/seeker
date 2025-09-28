@@ -8,25 +8,24 @@ A git repository provider that indexes through your documents and send them to a
 
 ### Pre-requisites
 
-1. Docker
+1. Podman (refer to #26)
 
 ### Configuration
 
-1. First of all, generate a ssh key pair just like how you do for Github ssh access.
-2. In config/.ssh, create a file named `authorized_keys`, and put you public key in there. In case you want to put multiple keys, just separate them by a linebreak.
-3. Run `chmod 600` for the authorized_keys file.
+1. Use the setup script to create all the necessary files: `make setup`
+2. Generate a ssh key pair just like how you do for Github ssh access.
+3. Put your generated pub key in `.seeker/.ssh/authorized_keys` (this file was created by the setup script)
+4. Run `chmod 600` for the authorized_keys file.
+
+These steps are only necessary when running the container. Building doesn't require any prior setup
 
 ### Building
 
-After all the configuration, all you got to do is use the command `docker build`.
+After all the configuration, all you got to do is use the command `make build`.
 
 ### Running the image
 
-With the image already built, run it with `docker run`, mapping the port `22` and binding ssh config:
-
-```sh
-docker run -p 2222:22 -it -v ./config/.ssh:/repo/.ssh seeker
-```
+With the image already built, run it with `make run`. It will create a container named "seeker" and bind its port 22 to port 2222.
 
 After that, you should be able to interact with this repository just like how you do in Github. In my personal setup, I created a ssh key with a hostname of `localhost` and user `git`, so the command to add the remote looks like this:
 
@@ -34,8 +33,7 @@ After that, you should be able to interact with this repository just like how yo
 git remote add origin ssh://git@localhost:2222/repo/seeker.git
 ```
 
-Inside the container, you can access the logs with:
-
+After the container started, you can watch the daemon logs with:
 ```bash
-tail -F /repo/seeker.git/info/log
+make watch-daemon-logs
 ```
