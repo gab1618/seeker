@@ -16,7 +16,7 @@ build:
 
 .PHONY: run
 run:
-	podman run -it -v ./.seeker/.ssh:/repo/.ssh -p 2222:22 --name seeker seeker
+	podman run -it -v ./.seeker/.ssh:/repo/.ssh -p 2222:22 --rm --name seeker seeker
 
 .PHONY: watch-daemon-logs
 watch-daemon-logs:
