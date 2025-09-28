@@ -29,12 +29,12 @@ async fn main() -> DaemonProcessResult<()> {
     let env_args = EnvArgs::load().unwrap();
     setup_logging()?;
     let shared_indexer = Arc::new(MockIndexer {});
-    let listener = TcpListener::bind(env_args.bind_url)
+    let listener = TcpListener::bind(&env_args.bind_url)
         .await
         .map_err(|_| DaemonProcessErr::SetupServer)?;
     let server = DaemonServer::new(listener, shared_indexer.clone())
         .map_err(|_| DaemonProcessErr::StartServer)?;
-    log::info!("Server started at port 5151");
+    log::info!("Server started at {}", env_args.bind_url);
     server.start().await;
 
     tokio::signal::ctrl_c()
