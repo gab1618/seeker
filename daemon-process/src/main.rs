@@ -3,9 +3,7 @@ use tokio::net::TcpListener;
 
 use seeker_daemon_core::{indexer::Indexer, server::DaemonServer};
 
-use crate::{
-    error::{DaemonProcessErr, DaemonProcessResult}, log_config::setup_logging
-};
+use crate::log_config::setup_logging;
 
 mod error;
 mod log_config;
@@ -25,21 +23,22 @@ impl Indexer for MockIndexer {
 }
 
 #[tokio::main]
-async fn main() -> DaemonProcessResult<()> {
-    let env_args = EnvArgs::load().unwrap();
+async fn main() {
+    if let Err(err) = start_daemon().await {
+        log::error!("{err}");
+    }
+}
+
+async fn start_daemon() -> anyhow::Result<()> {
     setup_logging()?;
+    let env_args = EnvArgs::load()?;
     let shared_indexer = Arc::new(MockIndexer {});
-    let listener = TcpListener::bind(&env_args.bind_url)
-        .await
-        .map_err(|_| DaemonProcessErr::SetupServer)?;
-    let server = DaemonServer::new(listener, shared_indexer.clone())
-        .map_err(|_| DaemonProcessErr::StartServer)?;
+    let listener = TcpListener::bind(&env_args.bind_url).await?;
+    let server = DaemonServer::new(listener, shared_indexer.clone())?;
     log::info!("Server started at {}", env_args.bind_url);
     server.start().await;
 
-    tokio::signal::ctrl_c()
-        .await
-        .map_err(|_| DaemonProcessErr::InterruptServer)?;
+    tokio::signal::ctrl_c().await?;
     log::info!("Server stopped");
 
     Ok(())

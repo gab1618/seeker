@@ -11,3 +11,4 @@ pub fn setup_logging() -> DaemonProcessResult<()> {
 
     Ok(())
 }
+

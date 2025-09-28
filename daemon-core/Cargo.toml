@@ -6,6 +6,7 @@ edition = "2024"
 [dependencies]
 log = {workspace = true}
 tokio = {workspace = true}
+thiserror = {workspace = true}
 
 [features]
 server = ["indexer", "api"]
