@@ -15,7 +15,7 @@ struct MockIndexer {}
 impl Indexer for MockIndexer {
     async fn index_file<'a>(
         &'a self,
-        file_path: std::path::PathBuf,
+        file_path: &'a std::path::Path,
     ) -> anyhow::Result<()> {
         println!("Indexing file: {}", file_path.display());
 
