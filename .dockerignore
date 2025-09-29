@@ -4,3 +4,5 @@
 Makefile
 config/.ssh
 README.md
+target
+.seeker
