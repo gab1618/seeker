@@ -1,6 +1,4 @@
-use seeker_daemon_core::{
-    error::DaemonServerResult, indexer::Indexer, server::DaemonServer,
-};
+use seeker_daemon_core::{indexer::Indexer, server::DaemonServer};
 use std::sync::{
     Arc,
     atomic::{AtomicU8, Ordering},
@@ -21,7 +19,7 @@ impl MockIndexer {
 }
 
 impl Indexer for MockIndexer {
-    fn index_file(&self, _file_path: std::path::PathBuf) -> DaemonServerResult<()> {
+    fn index_file(&self, _file_path: std::path::PathBuf) -> anyhow::Result<()> {
         self.index_calls_count.fetch_add(1, Ordering::SeqCst);
         Ok(())
     }
