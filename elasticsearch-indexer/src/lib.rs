@@ -1,0 +1,56 @@
+use serde_json::json;
+use std::{fs::OpenOptions, io::Read};
+
+use elasticsearch::{Elasticsearch, IndexParts, http::transport::Transport};
+use seeker_daemon_core::indexer::Indexer;
+
+use crate::error::ElasticIndexerErr;
+
+mod error;
+
+pub struct ElasticSearchIndexer {
+    client: Option<Elasticsearch>,
+    index_name: String,
+}
+
+impl ElasticSearchIndexer {
+    pub fn new(cluster_url: &str, index_name: String) -> anyhow::Result<Self> {
+        let t = Transport::single_node(cluster_url).ok();
+
+        let client = t.map(Elasticsearch::new);
+        Ok(Self { client, index_name })
+    }
+}
+
+#[async_trait::async_trait]
+impl Indexer for ElasticSearchIndexer {
+    async fn index_file<'a>(&'a self, file_path: &'a std::path::Path) -> anyhow::Result<()> {
+        let file_id = file_path
+            .as_os_str()
+            .to_str()
+            .ok_or(ElasticIndexerErr::GenerateFileId)?;
+        let mut r = OpenOptions::new()
+            .read(true)
+            .open(file_path)
+            .map_err(ElasticIndexerErr::OpenFile)?;
+        let mut file_content = String::new();
+        r.read_to_string(&mut file_content)
+            .map_err(ElasticIndexerErr::ReadFile)?;
+        let filename = file_path
+            .file_name()
+            .ok_or(ElasticIndexerErr::GetFileName)?
+            .to_str()
+            .ok_or(ElasticIndexerErr::GetFileName)?;
+
+        //TODO: when client is unavailable, save the request locally.
+        if let Some(c) = &self.client {
+            c.index(IndexParts::IndexId(&self.index_name, file_id))
+                .body(json! ({
+                    "id": file_id,
+                    "name": filename,
+                    "content": file_content,
+                }));
+        }
+        Ok(())
+    }
+}
