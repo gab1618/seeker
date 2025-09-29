@@ -5,9 +5,9 @@ use tokio::io;
 pub enum DaemonServerError {
     #[error("Could not parse command")]
     ParseCommand,
-    #[error("Could not read request")]
+    #[error("Could not read request: {0}")]
     ReadRequest(#[source] io::Error),
-    #[error("Could not send response")]
+    #[error("Could not send response: {0}")]
     SendResponse(#[source] io::Error),
     #[error("Could not start server")]
     StartServer,
