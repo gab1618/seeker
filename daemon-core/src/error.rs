@@ -9,8 +9,6 @@ pub enum DaemonServerError {
     ReadRequest(#[source] io::Error),
     #[error("Could not send response: {0}")]
     SendResponse(#[source] io::Error),
-    #[error("Could not start server")]
-    StartServer,
     #[error("Could not parse response")]
     ParseResponse,
 }
