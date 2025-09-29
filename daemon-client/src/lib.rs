@@ -33,15 +33,20 @@ impl DaemonClient {
 
         let str_cmd: String = cmd.into();
         let server_req = format!("{str_cmd}\n");
-        w.write_all(server_req.as_bytes()).await?;
-        w.flush().await?;
+        w.write_all(server_req.as_bytes())
+            .await
+            .map_err(DaemonClientErr::SendIndexReq)?;
+        w.flush().await.map_err(DaemonClientErr::SendIndexReq)?;
 
         let mut response_input = String::new();
         r.read_line(&mut response_input)
             .await
-            .map_err(|_| DaemonClientErr::RecvServerResponse)?;
+            .map_err(DaemonClientErr::RecvServerResponse)?;
 
-        let parsed_response: DaemonResponse = response_input.as_str().try_into()?;
+        let parsed_response: DaemonResponse = response_input
+            .as_str()
+            .try_into()
+            .map_err(DaemonClientErr::ParseServerResponse)?;
 
         Ok(parsed_response)
     }
