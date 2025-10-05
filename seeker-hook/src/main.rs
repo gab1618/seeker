@@ -42,10 +42,9 @@ async fn main() -> SeekerHookResult<()> {
 
     let mut daemon_client = get_daemon_client("127.0.0.1:5151".into()).await?;
 
-    for entry in tracker.get_changed_files().unwrap() {
-        let (filepath, _) = entry.unwrap();
+    for oid in tracker.get_changed_files().unwrap() {
         daemon_client
-            .index_file(filepath)
+            .index_file(oid)
             .await
             .map_err(|_| SeekerHookErr::IndexFile)?;
     }

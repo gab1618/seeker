@@ -1,5 +1,3 @@
-use std::path::PathBuf;
-
 use seeker_daemon_core::{
     command::{DaemonAction, DaemonCommand},
     response::DaemonResponse,
@@ -23,8 +21,8 @@ impl DaemonClient {
     pub fn new(conn: TcpStream) -> Self {
         Self { conn }
     }
-    pub async fn index_file(&mut self, file_path: PathBuf) -> anyhow::Result<DaemonResponse> {
-        let cmd = DaemonCommand::new(DaemonAction::Index, file_path);
+    pub async fn index_file(&mut self, target_oid: String) -> anyhow::Result<DaemonResponse> {
+        let cmd = DaemonCommand::new(DaemonAction::Index, target_oid);
 
         let (r, w) = self.conn.split();
 

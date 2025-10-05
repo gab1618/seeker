@@ -20,7 +20,11 @@ impl MockIndexer {
 
 #[async_trait::async_trait]
 impl Indexer for MockIndexer {
-    async fn index_file<'a>(&'a self, _file_path: &'a std::path::Path) -> anyhow::Result<()> {
+    async fn index_file<'a>(
+        &'a self,
+        _file_path: &'a std::path::Path,
+        _content: String,
+    ) -> anyhow::Result<()> {
         self.index_calls_count.fetch_add(1, Ordering::SeqCst);
         Ok(())
     }
@@ -48,6 +52,6 @@ async fn test_index_req() {
     let mut client = DaemonClient::new(client_conn);
     assert_eq!(shared_indexer.get_curr_index_count(), 0);
 
-    client.index_file("./text.txt".into()).await.unwrap();
+    client.index_file("aaaaaaaaa".into()).await.unwrap();
     assert_eq!(shared_indexer.get_curr_index_count(), 1);
 }

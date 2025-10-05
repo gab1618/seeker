@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{path::PathBuf, sync::Arc};
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader, BufWriter},
     net::{TcpListener, TcpStream},
@@ -49,8 +49,9 @@ impl<T: Indexer + Send + Sync + 'static> DaemonServer<T> {
 
         match parsed_command.action {
             DaemonAction::Index => {
-                indexer.index_file(parsed_command.filepath.as_path()).await?;
-                log::info!("Indexed file {}", parsed_command.filepath.display());
+                let file_path = PathBuf::from(".");
+                indexer.index_file(&file_path, String::new()).await?;
+                log::info!("Indexed file {}", parsed_command.target_oid);
             }
         }
 

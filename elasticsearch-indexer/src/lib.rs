@@ -1,5 +1,5 @@
 use serde_json::json;
-use std::{fs::OpenOptions, io::Read};
+use std::path::Path;
 
 use elasticsearch::{Elasticsearch, IndexParts, http::transport::Transport};
 use seeker_daemon_core::indexer::Indexer;
@@ -24,19 +24,11 @@ impl ElasticSearchIndexer {
 
 #[async_trait::async_trait]
 impl Indexer for ElasticSearchIndexer {
-    async fn index_file<'a>(&'a self, file_path: &'a std::path::Path) -> anyhow::Result<()> {
+    async fn index_file<'a>(&'a self, file_path: &'a Path, content: String) -> anyhow::Result<()> {
         let file_id = file_path
             .as_os_str()
             .to_str()
             .ok_or(ElasticIndexerErr::GenerateFileId)?;
-        // TODO: this actually don't work because all we have in the container is a bare repo
-        let mut r = OpenOptions::new()
-            .read(true)
-            .open(file_path)
-            .map_err(ElasticIndexerErr::OpenFile)?;
-        let mut file_content = String::new();
-        r.read_to_string(&mut file_content)
-            .map_err(ElasticIndexerErr::ReadFile)?;
         let filename = file_path
             .file_name()
             .ok_or(ElasticIndexerErr::GetFileName)?
@@ -49,7 +41,7 @@ impl Indexer for ElasticSearchIndexer {
                 .body(json! ({
                     "id": file_id,
                     "name": filename,
-                    "content": file_content,
+                    "content": content,
                 }));
         }
         Ok(())
