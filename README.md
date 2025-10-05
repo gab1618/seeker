@@ -32,8 +32,3 @@ After that, you should be able to interact with this repository just like how yo
 ```sh
 git remote add origin ssh://git@localhost:2222/repo/seeker.git
 ```
-
-After the container started, you can watch the daemon logs with:
-```bash
-make watch-daemon-logs
-```
