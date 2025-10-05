@@ -29,6 +29,7 @@ impl Indexer for ElasticSearchIndexer {
             .as_os_str()
             .to_str()
             .ok_or(ElasticIndexerErr::GenerateFileId)?;
+        // TODO: this actually don't work because all we have in the container is a bare repo
         let mut r = OpenOptions::new()
             .read(true)
             .open(file_path)

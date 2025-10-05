@@ -6,4 +6,8 @@ use thiserror::Error;
 pub enum SeekerEnvErr {
     #[error("Could not load daemon bind url: {0}")]
     LoadDaemonBindUrl(#[source] VarError),
+    #[error("Could not load elasticsearch cluster url: {0}")]
+    LoadESClusterUrl(#[source] VarError),
+    #[error("Could not load elasticsearch index name: {0}")]
+    LoadESIndexName(#[source] VarError),
 }

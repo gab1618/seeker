@@ -5,6 +5,10 @@ services:
       - ./.seeker/.ssh:/repo/.ssh
     ports:
       - 2222:22
+    environment:
+      SEEKER_DAEMON_BIND_URL: elasticsearch:9200
+      SEEKER_DAEMON_ES_INDEX_NAME: documents
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:${ES_LOCAL_VERSION}
     container_name: seeker-elastic-dev
