@@ -9,4 +9,6 @@ chmod 755 /var/run/sshd
 # Start SSH daemon
 exec /usr/bin/seeker-daemon-process &
 
-exec /usr/sbin/sshd -D -e "$@"
+exec /usr/sbin/sshd -D -e "$@" &
+
+exec tail /var/log/seekerd.log -F
