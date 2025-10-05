@@ -1,0 +1,10 @@
+services:
+  seeker:
+    build: .
+    ports:
+      - 2222:22
+    volumes:
+      - ./.seeker/.ssh:/repo/.ssh
+
+volumes:
+  seeker:
