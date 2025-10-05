@@ -26,7 +26,7 @@ async fn main() {
 }
 
 async fn start_daemon() -> anyhow::Result<()> {
-    setup_logging()?;
+    setup_logging("/var/log/seekerd.log".into())?;
     let env_args = EnvArgs::load()?;
     let shared_indexer = Arc::new(MockIndexer {});
     let listener = TcpListener::bind(&env_args.bind_url).await?;
