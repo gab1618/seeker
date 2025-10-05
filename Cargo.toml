@@ -13,6 +13,7 @@ resolver = "3"
 seeker-daemon-core = {path = "daemon-core"}
 seeker-daemon-client = {path = "daemon-client"}
 seeker-env = {path = "seeker-env"}
+elasticsearch-indexer = {path = "elasticsearch-indexer"}
 tokio = { version = "1.47.1", features = ["full"] }
 log = "0.4.28"
 thiserror = "2.0.16"

@@ -1240,6 +1240,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "async-trait",
+ "elasticsearch-indexer",
  "log",
  "seeker-daemon-core",
  "seeker-env",

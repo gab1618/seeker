@@ -14,11 +14,11 @@ pub struct ElasticSearchIndexer {
 }
 
 impl ElasticSearchIndexer {
-    pub fn new(cluster_url: &str, index_name: String) -> anyhow::Result<Self> {
+    pub fn new(cluster_url: &str, index_name: String) -> Self {
         let t = Transport::single_node(cluster_url).ok();
 
         let client = t.map(Elasticsearch::new);
-        Ok(Self { client, index_name })
+        Self { client, index_name }
     }
 }
 
