@@ -26,9 +26,8 @@ RUN apt-get update && \
 COPY --from=builder /repo/seeker.git /repo/seeker.git
 
 # Copy built binaries
-COPY --from=builder /build/target/release/seeker-hook /usr/bin/
+COPY --from=builder /build/target/release/seeker-hook /repo/seeker.git/hooks/post-receive
 COPY --from=builder /build/target/release/seeker-daemon-process /usr/bin/
-COPY ./config/hooks/post-receive.sh /repo/seeker.git/hooks/post-receive
 RUN chmod +x /repo/seeker.git/hooks/post-receive
 
 RUN mkdir -p /var/lib/seeker-daemon
@@ -40,6 +39,8 @@ RUN useradd -m -d /repo git && \
   ssh-keygen -A
 
 RUN chown -R git:git /repo
+
+ENV SEEKER_DAEMON_BIND_URL=127.0.0.1:5151
 
 EXPOSE 22
 

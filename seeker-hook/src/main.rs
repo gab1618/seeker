@@ -10,7 +10,6 @@ use crate::{
     error::{SeekerHookErr, SeekerHookResult},
     state_manager::StateValue,
 };
-use seeker_env::EnvArgs;
 
 #[cfg(test)]
 mod test;
@@ -25,7 +24,6 @@ pub mod error;
 
 #[tokio::main]
 async fn main() -> SeekerHookResult<()> {
-    let env_args = EnvArgs::load().unwrap();
     let stdin = std::io::stdin();
     let stdin_line = stdin
         .lines()
@@ -42,7 +40,7 @@ async fn main() -> SeekerHookResult<()> {
     let manager = StateManager::new(repo_path.clone());
     let tracker = ChangesTracker::new(repo_path, &manager).expect("Could not get file changes");
 
-    let mut daemon_client = get_daemon_client(env_args.bind_url).await?;
+    let mut daemon_client = get_daemon_client("127.0.0.1:5151".into()).await?;
 
     for entry in tracker.get_changed_files().unwrap() {
         let (filepath, _) = entry.unwrap();
