@@ -25,7 +25,7 @@ impl<T: Indexer + Send + Sync + 'static> DaemonServer<T> {
             let _ = tx.send(());
             while let Ok((soc, _addr)) = self.listener.accept().await {
                 let indexer = self.indexer.clone();
-                if let Err(err) = Self::handle_connection(soc, indexer).await {
+                if let Err(err) = self.handle_connection(soc, indexer).await {
                     log::error!("{:#?}", err);
                 }
             }
@@ -34,7 +34,7 @@ impl<T: Indexer + Send + Sync + 'static> DaemonServer<T> {
         });
         let _ = rx.await;
     }
-    async fn handle_connection(mut soc: TcpStream, indexer: Arc<T>) -> anyhow::Result<()> {
+    async fn handle_connection(&self, mut soc: TcpStream, indexer: Arc<T>) -> anyhow::Result<()> {
         let mut input = String::new();
 
         let (mut r, mut w) = soc.split();
@@ -49,9 +49,9 @@ impl<T: Indexer + Send + Sync + 'static> DaemonServer<T> {
 
         match parsed_command.action {
             DaemonAction::Index => {
-                let file_path = PathBuf::from(".");
-                indexer.index_file(&file_path, String::new()).await?;
-                log::info!("Indexed file {}", parsed_command.target_oid);
+                log::info!("Indexing request received for repo {}", &parsed_command.repo_path);
+                let ex_file_path = PathBuf::from("test.txt");
+                indexer.index_file(&ex_file_path, String::new()).await?;
             }
         }
 

@@ -52,6 +52,6 @@ async fn test_index_req() {
     let mut client = DaemonClient::new(client_conn);
     assert_eq!(shared_indexer.get_curr_index_count(), 0);
 
-    client.index_file("aaaaaaaaa".into()).await.unwrap();
+    client.request_indexing("aaaaaaaaa".into()).await.unwrap();
     assert_eq!(shared_indexer.get_curr_index_count(), 1);
 }

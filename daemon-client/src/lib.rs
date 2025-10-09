@@ -21,8 +21,8 @@ impl DaemonClient {
     pub fn new(conn: TcpStream) -> Self {
         Self { conn }
     }
-    pub async fn index_file(&mut self, target_oid: String) -> anyhow::Result<DaemonResponse> {
-        let cmd = DaemonCommand::new(DaemonAction::Index, target_oid);
+    pub async fn request_indexing(&mut self, repo_path: String) -> anyhow::Result<DaemonResponse> {
+        let cmd = DaemonCommand::new(DaemonAction::Index, repo_path);
 
         let (r, w) = self.conn.split();
 
