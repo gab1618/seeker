@@ -1,5 +1,5 @@
 use serde_json::json;
-use std::path::Path;
+use std::path::PathBuf;
 
 use elasticsearch::{Elasticsearch, IndexParts, http::transport::Transport};
 use seeker_daemon_core::indexer::Indexer;
@@ -24,7 +24,7 @@ impl ElasticSearchIndexer {
 
 #[async_trait::async_trait]
 impl Indexer for ElasticSearchIndexer {
-    async fn index_file<'a>(&'a self, file_path: &'a Path, content: String) -> anyhow::Result<()> {
+    async fn index_file(&self, file_path: PathBuf, content: String) -> anyhow::Result<()> {
         let file_id = file_path
             .as_os_str()
             .to_str()

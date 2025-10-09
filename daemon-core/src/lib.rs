@@ -8,3 +8,9 @@ pub mod indexer;
 pub mod response;
 #[cfg(feature = "server")]
 pub mod server;
+#[cfg(feature = "server")]
+pub mod changes_tracker;
+#[cfg(feature = "server")]
+pub mod state;
+#[cfg(feature = "server")]
+mod setup_repo;

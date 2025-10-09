@@ -10,8 +10,6 @@ use tokio::{
 use crate::error::DaemonClientErr;
 
 pub mod error;
-#[cfg(test)]
-mod test;
 
 pub struct DaemonClient {
     conn: TcpStream,

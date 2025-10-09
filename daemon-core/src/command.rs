@@ -44,6 +44,7 @@ impl TryFrom<&str> for DaemonCommand {
         let path_arg = args
             .next()
             .ok_or(DaemonServerError::ParseCommand)?
+            .trim()
             .to_owned();
 
         Ok(Self {

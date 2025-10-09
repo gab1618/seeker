@@ -1,14 +1,17 @@
-use std::{path::PathBuf, sync::Arc};
+use std::sync::Arc;
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader, BufWriter},
     net::{TcpListener, TcpStream},
 };
 
 use crate::{
-    command::{DaemonAction, DaemonCommand},
+    changes_tracker::ChangesTracker,
+    command::DaemonCommand,
     error::DaemonServerError,
     indexer::Indexer,
     response::{DaemonResponse, DaemonResponseStatus},
+    setup_repo::setup_repo,
+    state::State,
 };
 pub struct DaemonServer<T: Indexer + Send + Sync + 'static> {
     listener: TcpListener,
@@ -47,14 +50,6 @@ impl<T: Indexer + Send + Sync + 'static> DaemonServer<T> {
 
         let parsed_command: DaemonCommand = input.as_str().try_into()?;
 
-        match parsed_command.action {
-            DaemonAction::Index => {
-                log::info!("Indexing request received for repo {}", &parsed_command.repo_path);
-                let ex_file_path = PathBuf::from("test.txt");
-                indexer.index_file(&ex_file_path, String::new()).await?;
-            }
-        }
-
         let resp = DaemonResponse {
             message: "Command received".to_owned(),
             status: DaemonResponseStatus::Ok,
@@ -65,6 +60,26 @@ impl<T: Indexer + Send + Sync + 'static> DaemonServer<T> {
             .await
             .map_err(DaemonServerError::SendResponse)?;
         w.flush().await.map_err(DaemonServerError::SendResponse)?;
+
+        log::info!(
+            "Indexing request received for repo {}",
+            &parsed_command.repo_path
+        );
+        setup_repo(&parsed_command.repo_path).unwrap();
+        let state = State::new((&parsed_command.repo_path).into());
+        let tracker = ChangesTracker::new(&parsed_command.repo_path, &state)?;
+        let futures: Vec<_> = tracker
+            .get_changed_files()
+            .unwrap()
+            .into_iter()
+            .map(|(path, content)| indexer.index_file(path, content))
+            .collect();
+
+        for future in futures {
+            if let Err(err) = future.await {
+                log::error!("Error indexing file: {err}")
+            }
+        }
 
         Ok(())
     }
