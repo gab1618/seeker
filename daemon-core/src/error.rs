@@ -11,4 +11,12 @@ pub enum DaemonServerError {
     SendResponse(#[source] io::Error),
     #[error("Could not parse response")]
     ParseResponse,
+    #[error("Could not open repository: {0}")]
+    OpenRepo(#[source] git2::Error),
+    #[error("Could not get last commit: {0}")]
+    GetLastCommit(#[source] git2::Error),
+    #[error("Could not get changes: {0}")]
+    GetChanges(#[source] git2::Error),
+    #[error("Could not save state: {0}")]
+    SaveStateValue(#[source] io::Error),
 }

@@ -10,5 +10,7 @@ log = {workspace = true}
 seeker-env = {workspace = true}
 thiserror = {workspace = true}
 anyhow = {workspace = true}
+elasticsearch-indexer = {workspace = true}
 fern = "0.7"
 humantime = "2.2.0"
+async-trait = {workspace = true}
