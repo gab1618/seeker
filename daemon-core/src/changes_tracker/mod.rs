@@ -3,6 +3,9 @@ use std::path::{Path, PathBuf};
 
 use crate::{error::DaemonServerError, state::State};
 
+#[cfg(test)]
+mod test;
+
 pub struct ChangesTracker<'a> {
     state: &'a State,
     repo: Repository,
