@@ -1,6 +1,6 @@
 use std::{fs::OpenOptions, io::Write, path::Path};
 
-use git2::{Commit, Oid, Repository, Signature};
+use git2::{Commit, Oid, PushOptions, Repository, Signature};
 use tempfile::{TempDir, tempdir};
 
 pub struct TestRepo {
@@ -68,6 +68,20 @@ impl TestRepo {
 
         Ok(new_commit)
     }
+    pub fn push_remote(&self) -> anyhow::Result<()> {
+        let mut remote = self.clone_repo.find_remote("origin")?;
+        let mut push_options = PushOptions::new();
+
+        let current_head = self.clone_repo.head()?;
+        let current_branch_name = current_head.shorthand().unwrap();
+        let refspec = format!(
+            "refs/heads/{branch}:refs/heads/{branch}",
+            branch = current_branch_name
+        );
+        remote.push(&[&refspec], Some(&mut push_options))?;
+
+        Ok(())
+    }
 }
 
 #[test]
@@ -78,10 +92,24 @@ fn test_new_test_repo() {
 #[test]
 fn test_commit_clone() {
     let repo = TestRepo::new().unwrap();
-    repo.commit_clone("testing.txt", "Hello, world", "First commit").unwrap();
+    repo.commit_clone("testing.txt", "Hello, world", "First commit")
+        .unwrap();
     repo.clone_repo().head().unwrap();
 
-    repo.commit_clone("testing.txt", "Hello, world!!!", "Second commit").unwrap();
+    repo.commit_clone("testing.txt", "Hello, world!!!", "Second commit")
+        .unwrap();
+    repo.clone_repo().head().unwrap();
+}
+
+#[test]
+fn test_push() {
+    let repo = TestRepo::new().unwrap();
+    repo.commit_clone("testing.txt", "Hello, world", "First commit")
+        .unwrap();
+
     repo.clone_repo().head().unwrap();
 
+    assert!(repo.bare_repo().head().is_err());
+    repo.push_remote().unwrap();
+    assert!(repo.bare_repo().head().is_ok());
 }
