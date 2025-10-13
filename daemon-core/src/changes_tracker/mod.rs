@@ -1,5 +1,5 @@
 use git2::{self, Repository};
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use crate::state::State;
 
