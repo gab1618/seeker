@@ -1,3 +1,4 @@
+use git2::Repository;
 use std::sync::Arc;
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader, BufWriter},
@@ -67,7 +68,8 @@ impl<T: Indexer + Send + Sync + 'static> DaemonServer<T> {
         );
         setup_repo(&parsed_command.repo_path).unwrap();
         let state = State::new((&parsed_command.repo_path).into());
-        let tracker = ChangesTracker::new(&parsed_command.repo_path, &state)?;
+        let target_repo = Repository::open_bare(&parsed_command.repo_path)?;
+        let tracker = ChangesTracker::new(target_repo, &state);
         let futures: Vec<_> = tracker
             .get_changed_files()
             .unwrap()
