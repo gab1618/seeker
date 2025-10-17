@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use crate::{daemon_client::get_daemon_client, error::SeekerHookResult};
 
 mod daemon_client;
@@ -6,10 +8,9 @@ pub mod error;
 
 #[tokio::main]
 async fn main() -> SeekerHookResult<()> {
-    let mut repo_path = std::env::current_exe().unwrap();
-    // TODO: do I have to explain?
-    repo_path.pop();
-    repo_path.pop();
+    let exe_path = std::env::current_exe().unwrap();
+    let repo_path_parts = exe_path.iter().collect::<Vec<_>>();
+    let repo_path = PathBuf::from_iter(repo_path_parts[..repo_path_parts.len() - 2].iter());
 
     let mut daemon_client = get_daemon_client("127.0.0.1:5151".into()).await?;
 
