@@ -62,16 +62,17 @@ impl<'a> ChangesTracker<'a> {
                 let path = new_file
                     .path()
                     .or_else(|| old_file.path())
-                    .ok_or(DaemonServerError::ParseCommand)? // TODO: use a proper error
+                    .ok_or(DaemonServerError::GetFilePath)?
                     .to_str()
-                    .ok_or(DaemonServerError::ParseCommand)? // TODO: use a proper error
+                    .ok_or(DaemonServerError::GetFilePath)?
                     .to_string();
                 let file_id = new_file.id();
                 let content = self
                     .repo
                     .find_blob(file_id)
                     .map_err(DaemonServerError::GetChanges)?;
-                let str_content = String::from_utf8(content.content().to_vec()).unwrap();
+                let str_content = String::from_utf8(content.content().to_vec())
+                    .map_err(|_| DaemonServerError::ParseChanges)?;
 
                 Ok((path, str_content))
             })

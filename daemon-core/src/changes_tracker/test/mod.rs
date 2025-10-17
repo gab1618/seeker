@@ -8,7 +8,7 @@ mod utils;
 fn test_get_latest_changes() {
     let test_repo = TestRepo::new().unwrap();
     let state_dir = tempdir().unwrap();
-    let state_manager = State::new(state_dir.path().to_path_buf());
+    let state_manager = State::new(state_dir.path().to_path_buf()).unwrap();
     test_repo.commit_clone("README.md", "## Hello!", "First commit").unwrap();
     test_repo.push_remote().unwrap();
     let tracker = ChangesTracker::new(test_repo.bare_repo().unwrap(), &state_manager);

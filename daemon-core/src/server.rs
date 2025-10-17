@@ -66,14 +66,12 @@ impl<T: Indexer + Send + Sync + 'static> DaemonServer<T> {
             "Indexing request received for repo {}",
             &parsed_command.repo_path
         );
-        setup_repo(&parsed_command.repo_path).unwrap();
-        let state = State::new((&parsed_command.repo_path).into());
+        setup_repo(&parsed_command.repo_path)?;
+        let state = State::new((&parsed_command.repo_path).into())?;
         let target_repo = Repository::open_bare(&parsed_command.repo_path)?;
         let tracker = ChangesTracker::new(target_repo, &state);
         let futures: Vec<_> = tracker
-            .get_changed_files()
-            .unwrap()
-            .into_iter()
+            .get_changed_files()?
             .map(|(path, content)| indexer.index_file(path, content))
             .collect();
 
