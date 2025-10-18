@@ -1,5 +1,3 @@
-use std::path::PathBuf;
-
 use crate::error::DaemonServerError;
 
 #[cfg_attr(test, derive(Debug, PartialEq))]
@@ -26,12 +24,12 @@ impl From<DaemonAction> for String {
 }
 pub struct DaemonCommand {
     pub action: DaemonAction,
-    pub filepath: PathBuf,
+    pub repo_path: String,
 }
 
 impl DaemonCommand {
-    pub fn new(action: DaemonAction, filepath: PathBuf) -> Self {
-        Self { action, filepath }
+    pub fn new(action: DaemonAction, repo_path: String) -> Self {
+        Self { action, repo_path }
     }
 }
 
@@ -43,12 +41,15 @@ impl TryFrom<&str> for DaemonCommand {
         let action_arg = args.next().ok_or(DaemonServerError::ParseCommand)?;
         let parsed_action: DaemonAction = action_arg.try_into()?;
 
-        let file_path_arg = args.next().ok_or(DaemonServerError::ParseCommand)?;
-        let parsed_file_path: PathBuf = file_path_arg.into();
+        let path_arg = args
+            .next()
+            .ok_or(DaemonServerError::ParseCommand)?
+            .trim()
+            .to_owned();
 
         Ok(Self {
             action: parsed_action,
-            filepath: parsed_file_path,
+            repo_path: path_arg,
         })
     }
 }
@@ -56,27 +57,25 @@ impl TryFrom<&str> for DaemonCommand {
 impl From<DaemonCommand> for String {
     fn from(val: DaemonCommand) -> Self {
         let str_action: String = val.action.into();
-        format!("{} {}", str_action, val.filepath.display())
+        format!("{} {}", str_action, val.repo_path)
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::path::PathBuf;
-
     use super::{DaemonAction, DaemonCommand};
 
     #[test]
     fn test_parse_command() {
-        let example_path = PathBuf::from("./test.txt");
+        let example_example_path = "./repos/repo.git".to_owned();
 
         let cmd = DaemonCommand {
             action: super::DaemonAction::Index,
-            filepath: example_path.clone(),
+            repo_path: example_example_path.clone(),
         };
         let serialized: String = cmd.into();
         let parsed = DaemonCommand::try_from(serialized.as_str()).unwrap();
         assert_eq!(parsed.action, DaemonAction::Index);
-        assert_eq!(parsed.filepath, example_path);
+        assert_eq!(parsed.repo_path, example_example_path);
     }
 }

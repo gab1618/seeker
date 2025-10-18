@@ -1,7 +1,30 @@
 services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.1.5
+    environment:
+      - discovery.type=single-node
+      - xpack.license.self_generated.type=basic
+      - xpack.security.enabled=false
+      - xpack.monitoring.collection.enabled=false
+    ports:
+      - "9200:9200"
+  kibana:
+    image: docker.elastic.co/kibana/kibana:9.1.5
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - XPACK_SECURITY_ENABLED=false
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
   seeker:
     build: .
+    ports:
+      - "2222:22"
+    depends_on:
+      - elasticsearch
     volumes:
       - ./.seeker/.ssh:/repo/.ssh
-    ports:
-      - 2222:22
+    environment:
+      - SEEKER_DAEMON_BIND_URL=127.168.0.1:5151
+      - SEEKER_DAEMON_ES_INDEX_NAME=seeker

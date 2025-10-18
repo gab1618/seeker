@@ -1,3 +1,4 @@
+use git2::Repository;
 use std::sync::Arc;
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader, BufWriter},
@@ -5,10 +6,13 @@ use tokio::{
 };
 
 use crate::{
-    command::{DaemonAction, DaemonCommand},
+    changes_tracker::ChangesTracker,
+    command::DaemonCommand,
     error::DaemonServerError,
     indexer::Indexer,
     response::{DaemonResponse, DaemonResponseStatus},
+    setup_repo::setup_repo,
+    state::State,
 };
 pub struct DaemonServer<T: Indexer + Send + Sync + 'static> {
     listener: TcpListener,
@@ -25,7 +29,7 @@ impl<T: Indexer + Send + Sync + 'static> DaemonServer<T> {
             let _ = tx.send(());
             while let Ok((soc, _addr)) = self.listener.accept().await {
                 let indexer = self.indexer.clone();
-                if let Err(err) = Self::handle_connection(soc, indexer).await {
+                if let Err(err) = self.handle_connection(soc, indexer).await {
                     log::error!("{:#?}", err);
                 }
             }
@@ -34,7 +38,7 @@ impl<T: Indexer + Send + Sync + 'static> DaemonServer<T> {
         });
         let _ = rx.await;
     }
-    async fn handle_connection(mut soc: TcpStream, indexer: Arc<T>) -> anyhow::Result<()> {
+    async fn handle_connection(&self, mut soc: TcpStream, indexer: Arc<T>) -> anyhow::Result<()> {
         let mut input = String::new();
 
         let (mut r, mut w) = soc.split();
@@ -47,15 +51,6 @@ impl<T: Indexer + Send + Sync + 'static> DaemonServer<T> {
 
         let parsed_command: DaemonCommand = input.as_str().try_into()?;
 
-        match parsed_command.action {
-            DaemonAction::Index => {
-                // TODO: avoid this clone. Perhaps changing the indexer trait definition to use
-                // path references instead
-                indexer.index_file(parsed_command.filepath.clone())?;
-                log::info!("Indexed file {}", parsed_command.filepath.display());
-            }
-        }
-
         let resp = DaemonResponse {
             message: "Command received".to_owned(),
             status: DaemonResponseStatus::Ok,
@@ -66,6 +61,25 @@ impl<T: Indexer + Send + Sync + 'static> DaemonServer<T> {
             .await
             .map_err(DaemonServerError::SendResponse)?;
         w.flush().await.map_err(DaemonServerError::SendResponse)?;
+
+        log::info!(
+            "Indexing request received for repo {}",
+            &parsed_command.repo_path
+        );
+        setup_repo(&parsed_command.repo_path)?;
+        let state = State::new((&parsed_command.repo_path).into())?;
+        let target_repo = Repository::open_bare(&parsed_command.repo_path)?;
+        let tracker = ChangesTracker::new(target_repo, &state);
+        let futures: Vec<_> = tracker
+            .get_changed_files()?
+            .map(|(path, content)| indexer.index_file(path, content))
+            .collect();
+
+        for future in futures {
+            if let Err(err) = future.await {
+                log::error!("Error indexing file: {err}")
+            }
+        }
 
         Ok(())
     }

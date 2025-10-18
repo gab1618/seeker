@@ -4,9 +4,9 @@ use std::{
     path::PathBuf,
 };
 
-use crate::error::{SeekerHookErr, SeekerHookResult};
+use crate::error::DaemonServerError;
 
-pub struct StateManager {
+pub struct State {
     config_dir_path: PathBuf,
 }
 
@@ -14,10 +14,10 @@ pub enum StateValue {
     LastIndexedCommit,
 }
 
-impl StateManager {
-    pub fn new(config_dir_path: PathBuf) -> Self {
-        std::fs::create_dir_all(&config_dir_path).unwrap();
-        Self { config_dir_path }
+impl State {
+    pub fn new(config_dir_path: PathBuf) -> anyhow::Result<Self> {
+        std::fs::create_dir_all(&config_dir_path).map_err(DaemonServerError::SetupStateDir)?;
+        Ok(Self { config_dir_path })
     }
     fn get_state_file_path(&self, state: StateValue) -> PathBuf {
         match state {
@@ -37,15 +37,15 @@ impl StateManager {
 
         Some(last_indexed_commit)
     }
-    pub fn save_state_value(&self, state: StateValue, value: &str) -> SeekerHookResult<()> {
+    pub fn save_state_value(&self, state: StateValue, value: &str) -> anyhow::Result<()> {
         let mut f = OpenOptions::new()
             .create(true)
             .truncate(true)
             .write(true)
             .open(self.get_state_file_path(state))
-            .map_err(|_| SeekerHookErr::SaveState)?;
+            .map_err(DaemonServerError::SaveStateValue)?;
 
-        write!(f, "{value}").unwrap();
+        write!(f, "{value}").map_err(DaemonServerError::SaveStateValue)?;
 
         Ok(())
     }
@@ -60,7 +60,7 @@ mod tests {
     #[test]
     fn test_save_and_retrieve_last_indexed_commit() {
         let config_dir_path = tempdir().unwrap();
-        let tracker = StateManager::new(config_dir_path.path().to_owned());
+        let tracker = State::new(config_dir_path.path().to_owned()).unwrap();
         let example_commit = "aaaaa".to_owned();
 
         assert_eq!(

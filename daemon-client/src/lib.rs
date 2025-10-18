@@ -1,5 +1,3 @@
-use std::path::PathBuf;
-
 use seeker_daemon_core::{
     command::{DaemonAction, DaemonCommand},
     response::DaemonResponse,
@@ -12,8 +10,6 @@ use tokio::{
 use crate::error::DaemonClientErr;
 
 pub mod error;
-#[cfg(test)]
-mod test;
 
 pub struct DaemonClient {
     conn: TcpStream,
@@ -23,8 +19,8 @@ impl DaemonClient {
     pub fn new(conn: TcpStream) -> Self {
         Self { conn }
     }
-    pub async fn index_file(&mut self, file_path: PathBuf) -> anyhow::Result<DaemonResponse> {
-        let cmd = DaemonCommand::new(DaemonAction::Index, file_path);
+    pub async fn request_indexing(&mut self, repo_path: String) -> anyhow::Result<DaemonResponse> {
+        let cmd = DaemonCommand::new(DaemonAction::Index, repo_path);
 
         let (r, w) = self.conn.split();
 
